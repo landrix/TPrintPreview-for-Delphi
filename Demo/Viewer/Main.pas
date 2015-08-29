@@ -3,8 +3,11 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  StdCtrls, ExtCtrls, Tabs, Preview, Dialogs, ComCtrls, Menus;
+  System.SysUtils, System.Classes,
+  Winapi.Windows, Winapi.Messages,
+  Vcl.Graphics, Vcl.Controls,Vcl.Forms, Vcl.ImgList,Vcl.Dialogs, Vcl.StdCtrls,
+  Vcl.ExtCtrls, Vcl.Tabs, Vcl.ComCtrls, Vcl.Menus, Vcl.ToolWin,Vcl.ExtDlgs,
+  Preview;
 
 type
   TMainForm = class(TForm)
@@ -27,9 +30,7 @@ type
     ZoomPageHeight: TMenuItem;
     PrintDialog: TPrintDialog;
     Splitter1: TSplitter;
-    ThumbnailPreview: TThumbnailPreview;
     Panel: TPanel;
-    PrintPreview: TPrintPreview;
     PageNavigator: TTabSet;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -50,6 +51,9 @@ type
     procedure ZoomPopupClick(Sender: TObject);
   private
     procedure WMDropFiles(var Msg: TMessage); message WM_DROPFILES;
+  private
+    PrintPreview: TPrintPreview;
+    ThumbnailPreview: TThumbnailPreview;
   end;
 
 var
@@ -60,7 +64,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Printers, ShellAPI;
+  Vcl.Printers, WinApi.ShellAPI;
 
 procedure TMainForm.WMDropFiles(var Msg: TMessage);
 var
@@ -81,6 +85,37 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  PrintPreview:= TPrintPreview.Create(self);
+  PrintPreview.Parent := self;
+  with PrintPreview do
+  begin
+    Left := 0;
+    Top := 0;
+    Width := 566;
+    Height := 464;
+    HorzScrollBar.Margin := 10;
+    HorzScrollBar.Tracking := True;
+    VertScrollBar.Margin := 10;
+    VertScrollBar.Tracking := True;
+    ParentFont := True;
+    TabOrder := 0;
+    UsePrinterOptions := True;
+    OnChange := PrintPreviewChange;
+  end;
+
+  ThumbnailPreview := TThumbnailPreview.Create(self);
+  ThumbnailPreview.Parent := self;
+  with ThumbnailPreview do
+  begin
+    Left := 0;
+    Top := 0;
+    Width := 115;
+    Height := 493;
+    TabOrder := 0;
+    PrintPreview := PrintPreview;
+    PaperView.ShadowWidth := 1;
+  end;
+
   DragAcceptFiles(Handle, True);
   if ParamCount > 0 then
     PrintPreview.LoadFromFile(ParamStr(1));

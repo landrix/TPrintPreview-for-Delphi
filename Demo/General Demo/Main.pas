@@ -5,9 +5,11 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Tabs, ComCtrls, Menus, ToolWin,
-  {$IFDEF COMPILER4_UP} ImgList, {$ENDIF} Preview, ExtDlgs;
+  System.SysUtils, System.Classes,
+  Winapi.Windows, Winapi.Messages,
+  Vcl.Graphics, Vcl.Controls,Vcl.Forms, Vcl.ImgList,Vcl.Dialogs, Vcl.StdCtrls,
+  Vcl.ExtCtrls, Vcl.Tabs, Vcl.ComCtrls, Vcl.Menus, Vcl.ToolWin,Vcl.ExtDlgs,
+  Preview;
 
 type
   TMainForm = class(TForm)
@@ -18,7 +20,6 @@ type
     SaveDialog: TSaveDialog;
     RichEdit1: TRichEdit;
     Splitter: TSplitter;
-    ThumbnailPreview: TThumbnailPreview;
     SavePDFDialog: TSaveDialog;
     GrayscaleOptionsPanel: TPanel;
     Bevel3: TBevel;
@@ -53,7 +54,6 @@ type
     ArrangeLeftMenuItem: TMenuItem;
     ArrangeTopMenuItem: TMenuItem;
     ToolBar: TToolBar;
-    PrintPreview: TPrintPreview;
     btnOpen: TToolButton;
     btnSave: TToolButton;
     btnSavePDF: TToolButton;
@@ -169,6 +169,9 @@ type
     procedure ExportCurrentClick(Sender: TObject);
     procedure CopyCurrentClick(Sender: TObject);
   private
+    PrintPreview: TPrintPreview;
+    ThumbnailPreview: TThumbnailPreview;
+  private
     PageBoundsAfterMargin: TRect;
     procedure DrawImageTextPage;
     procedure DrawImageOnlyPage;
@@ -179,18 +182,75 @@ type
 
 var
   MainForm: TMainForm;
-                                    
+
 implementation
 
 {$R *.DFM}
 
 uses
-  {$IFDEF COMPILER7_UP} XPMan, {$ENDIF} Math, Printers, Clipbrd;
+  System.Math, Vcl.Printers, Vcl.Clipbrd;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   SampleRTF: String;
 begin
+  PrintPreview:= TPrintPreview.Create(self);
+  PrintPreview.Parent := self;
+  with PrintPreview do
+  begin
+    Left := 164;
+    Top := 26;
+    Width := 620;
+    Height := 470;
+    HorzScrollBar.Margin := 10;
+    HorzScrollBar.Smooth := True;
+    HorzScrollBar.Tracking := True;
+    VertScrollBar.Margin := 10;
+    VertScrollBar.Smooth := True;
+    VertScrollBar.Tracking := True;
+    BorderStyle := bsNone           ;
+    Font.Charset := DEFAULT_CHARSET;
+    Font.Color := clWindowText;
+    Font.Height := -11;
+    Font.Name := 'Tahoma';
+    Font.Style := [];
+    PopupMenu := PreviewPopupMenu;
+    TabOrder := 4;
+    PaperView.PopupMenu := PagePopupMenu;
+    PDFDocumentInfo.Producer := 'TPrintPreview Component';
+    PDFDocumentInfo.Creator := 'TPrintPreview General Demo';
+    PDFDocumentInfo.Author := 'delphiarea.com';
+    PDFDocumentInfo.Subject := 'Auto generated pages';
+    PDFDocumentInfo.Title := 'General Demo';
+    PrintableAreaColor := clRed;
+    PrintJobTitle := 'TPrintPreview Sample Print';
+    OnNewPage := PrintPreviewNewPage;
+    OnChange := PrintPreviewChange;
+    OnStateChange := PrintPreviewStateChange;
+    OnZoomChange := PrintPreviewZoomChange;
+    OnProgress := PrintPreviewProgress;
+  end;
+
+  ThumbnailPreview := TThumbnailPreview.Create(self);
+  ThumbnailPreview.Parent := self;
+  with ThumbnailPreview do
+  begin
+    Left := 0;
+    Top := 26;
+    Width := 161;
+    Height := 470;
+    BorderStyle := bsNone;
+    PopupMenu := ThumbViewerPopupMenu;
+    TabOrder := 1;
+    AllowReorder := True;
+    MarkerColor := clRed;
+    PrintPreview := PrintPreview;
+    PaperView.PopupMenu := PagePopupMenu;
+    PaperView.ShadowWidth := 1;
+    Zoom := 15                 ;
+  end;
+
+
   PrintPreview.Zoom := 100;
   PrintPreview.Grayscale := [];
   {$IFDEF COMPILER7_UP}

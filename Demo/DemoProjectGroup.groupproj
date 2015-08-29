@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E11EA8E0-C73C-4006-9FE8-93B6BAE6598C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="General Demo\General.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="RichText Demo\RichPrint.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Viewer\Viewer.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="General">
+        <MSBuild Projects="General Demo\General.dproj"/>
+    </Target>
+    <Target Name="General:Clean">
+        <MSBuild Projects="General Demo\General.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="General:Make">
+        <MSBuild Projects="General Demo\General.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="RichPrint">
+        <MSBuild Projects="RichText Demo\RichPrint.dproj"/>
+    </Target>
+    <Target Name="RichPrint:Clean">
+        <MSBuild Projects="RichText Demo\RichPrint.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="RichPrint:Make">
+        <MSBuild Projects="RichText Demo\RichPrint.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Viewer">
+        <MSBuild Projects="Viewer\Viewer.dproj"/>
+    </Target>
+    <Target Name="Viewer:Clean">
+        <MSBuild Projects="Viewer\Viewer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Viewer:Make">
+        <MSBuild Projects="Viewer\Viewer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="General;RichPrint;Viewer"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="General:Clean;RichPrint:Clean;Viewer:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="General:Make;RichPrint:Make;Viewer:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

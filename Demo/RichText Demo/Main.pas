@@ -3,8 +3,11 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  StdCtrls, ExtCtrls, Tabs, Preview, Dialogs, jpeg, ComCtrls;
+  System.SysUtils, System.Classes,
+  Winapi.Windows, Winapi.Messages,
+  Vcl.Graphics, Vcl.Controls,Vcl.Forms, Vcl.ImgList,Vcl.Dialogs, Vcl.StdCtrls,
+  Vcl.ExtCtrls, Vcl.Tabs, Vcl.ComCtrls, Vcl.Menus, Vcl.ToolWin,Vcl.ExtDlgs,
+  Preview;
 
 type
   TMainForm = class(TForm)
@@ -17,10 +20,8 @@ type
     OpenButton: TButton;
     OpenDialog: TOpenDialog;
     RichEdit: TRichEdit;
-    ThumbnailPreview: TThumbnailPreview;
     Splitter1: TSplitter;
     Panel1: TPanel;
-    PrintPreview: TPrintPreview;
     PageNavigator: TTabSet;
     DirectPrint: TCheckBox;
     procedure FormCreate(Sender: TObject);
@@ -38,6 +39,9 @@ type
     procedure PrintPreviewEndDoc(Sender: TObject);
     procedure PrintPreviewZoomChange(Sender: TObject);
   private
+    PrintPreview: TPrintPreview;
+    ThumbnailPreview: TThumbnailPreview;
+  private
     procedure RenderRichEdit;
   end;
 
@@ -50,6 +54,47 @@ implementation
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  PrintPreview:= TPrintPreview.Create(self);
+  PrintPreview.Parent := self;
+  with PrintPreview do
+  begin
+    Left := 0;
+    Top := 0;
+    Width := 557;
+    Height := 529;
+    HorzScrollBar.Margin := 10;
+    HorzScrollBar.Tracking := True;
+    VertScrollBar.Margin := 10;
+    VertScrollBar.Tracking := True;
+    ParentFont := True;
+    TabOrder := 0;
+    PaperView.BorderColor := clNavy;
+    PaperView.ShadowWidth := 4;
+    PrintJobTitle := 'TPrintPreview Sample Print';
+    UsePrinterOptions := True;
+    OnBeginDoc := PrintPreviewBeginDoc;
+    OnEndDoc := PrintPreviewEndDoc;
+    OnNewPage := PrintPreviewNewPage;
+    OnChange := PrintPreviewChange;
+    OnZoomChange := PrintPreviewZoomChange;
+    OnProgress := PrintPreviewProgress;
+    OnBeforePrint := PrintPreviewBeforePrint;
+    OnAfterPrint := PrintPreviewAfterPrint;
+  end;
+
+  ThumbnailPreview := TThumbnailPreview.Create(self);
+  ThumbnailPreview.Parent := self;
+  with ThumbnailPreview do
+  begin
+    Left := 0;
+    Top := 29;
+    Width := 115;
+    Height := 558;
+    TabOrder := 2;
+    PrintPreview := PrintPreview;
+    PaperView.ShadowWidth := 1;
+  end;
+
   Randomize;
   PrintPreview.ZoomState := zsZoomToFit;
   ZoomComboBox.ItemIndex := 6; // Zoom to Fit (Whole Page)

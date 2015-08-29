@@ -1,8 +1,9 @@
 program General;
 
 uses
-  Forms,
-  Main in 'Main.pas' {MainForm};
+  Vcl.Forms,
+  Main in 'Main.pas' {MainForm},
+  Preview in '..\..\Preview.pas';
 
 {$R *.RES}
 

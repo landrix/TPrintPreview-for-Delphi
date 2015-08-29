@@ -25,8 +25,10 @@ unit Preview;
 interface
 
 uses
-  Windows, WinSpool, Messages, Classes, Graphics, Controls, SysUtils,
-  Forms, Dialogs, StdCtrls, ExtCtrls, ComCtrls, Menus, Printers;
+  System.SysUtils, System.Classes,
+  Winapi.Windows, Winapi.Messages, Winapi.WinSpool,
+  Vcl.Graphics, Vcl.Controls,Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Vcl.ComCtrls, Vcl.Menus, Vcl.Printers;
 
 {------------------------------------------------------------------------------}
 {  If you need transparent image printing, set AllowTransparentDIB to True.    }
@@ -1083,9 +1085,9 @@ implementation
 
 uses
   {$IFDEF SYNOPSE} SynPdf, {$ENDIF}
-  {$IFDEF COMPILER4_UP} ImgList, {$ENDIF}
-  {$IFDEF COMPILER7_UP} Types, {$ENDIF}
-  RichEdit, CommCtrl, Math;
+  System.Types,
+  Vcl.ImgList,
+  WinApi.RichEdit, WinApi.CommCtrl, System.Math;
 
 {$IFDEF COMPILER7_UP}
 resourcestring
@@ -4670,7 +4672,7 @@ end;
 
 function TPrintPreview.GetPrinter: TPrinter;
 begin
-  Result := Printers.Printer;
+  Result := Vcl.Printers.Printer;
 end;
 
 procedure TPrintPreview.ScaleCanvas(ACanvas: TCanvas);
