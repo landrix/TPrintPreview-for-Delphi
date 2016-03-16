@@ -1,0 +1,856 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="Author" content="Kambiz R. Khojasteh" />
+<style type="text/css">
+<!--
+body, td, th {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10pt;
+}
+a {
+	text-decoration: none;
+	color: #800000;
+}
+a:hover {
+	border-bottom: 1px solid #ff0000;
+}
+.header {
+	color: #ffffff;
+	background-color: #660000;
+	font-size: 24pt;
+	font-weight: bold;
+	padding: 0.5em 0;
+	text-align: center;
+}
+.tags {
+	margin: 0;
+	padding: 0;
+	height: 2em;
+}
+.tags li {
+	color: #ffffff;
+	background-color: #330000;
+	margin: 2px 4px 2px 0;
+	float: left;
+	font-weight: bold;
+	display: block;
+	padding: 0.25em 1em;
+	white-space: nowrap;
+	text-align: center;
+}
+.note {
+	color: #ff0000;
+}
+h3, h4 {
+	clear: both;
+	margin: 1.5em 0 0;
+	padding-bottom: 0.25em;
+	border-bottom: 1px solid #eeeeee;
+}
+.indicator {
+ 	float: right;
+ 	font-size: 9pt;
+ 	font-weight: normal !important;
+ 	color: #cccccc;
+}
+li {
+	margin-bottom: 1em;
+}
+sup {
+	font-size: 0.8em;
+}
+ul.condensed li {
+	margin-bottom: 0;
+}
+#menu {
+  clear: both;
+}
+#menu li {
+	margin-bottom: 0;
+}
+ul.multicolumn, ol.multicolumn {
+  width: 100%;
+}
+ul.multicolumn li, ol.multicolumn li {
+  float: left;
+  width: 20em;
+}
+-->
+</style>
+<title>ReadMe</title>
+</head>
+<body>
+<div class="header">Print Preview Components 5.90</div>
+<p>Copyright &copy; <a href="mailto:kambiz@delphiarea.com">Kambiz R. Khojasteh</a>. All rights reserved.<br />
+Get future component updates from <a href="http://www.delphiarea.com">http://www.delphiarea.com</a>.</p>
+<ul class="tags"> 
+  <li>Delphi 3</li>
+  <li>Delphi 4</li>
+  <li>Delphi 5</li>
+  <li>Delphi 6</li>
+  <li>Delphi 7</li>
+  <li>Delphi 2005</li>
+  <li>Delphi 2006</li>
+  <li>Delphi 2007</li>
+  <li>Delphi 2009</li>
+  <li>Delphi 2010</li>
+  <li>Delphi XE</li>
+  <li>Delphi XE2</li>
+</ul>
+<h3 id="content">CONTENT</h3>
+	<ul id="menu">
+		<li><a href="#overview">Overview</a></li>
+		<li><a href="#installation">Installation</a></li>
+		<li><a href="#printpreview">TPrintPreview Component</a>
+			<ul>
+				<li><a href="#printpreview_properties">Key Properties</a></li>
+				<li><a href="#printpreview_methods">Key Methods</a></li>
+				<li><a href="#printpreview_events">Key Events</a></li>
+				<li><a href="#printpreview_keyboard_shortcuts">Keyboard Shortcuts</a></li>
+				<li><a href="#printpreview_mouse_wheel">Mouse Wheel Functions</a></li>
+				<li><a href="#printpreview_pdf">PDF Output</a></li>
+				<li><a href="#printpreview_image_transparency">Image Transparency</a></li>
+				<li><a href="#printpreview_third_party_rich_edit_controls">Third Party Rich Edit Controls</a></li>
+				<li><a href="#printpreview_known_bugs">Known Issues</a></li>
+			</ul>
+		</li>
+		<li><a href="#thumbnailpreview">TThumbnailPreview Component</a>
+			<ul>
+				<li><a href="#thumbnailpreview_properties">Key Properties</a></li>
+				<li><a href="#thumbnailpreview_methods">Key Methods</a></li>
+				<li><a href="#thumbnailpreview_events">Key Events</a></li>
+			</ul>
+		</li>
+		<li><a href="#paperpreview">TPaperPreview Component</a>
+			<ul>
+				<li><a href="#paperpreview_properties">Key Properties</a></li>
+				<li><a href="#paperpreview_methods">Key Methods</a></li>
+				<li><a href="#paperpreview_events">Key Events</a></li>
+			</ul>
+		</li>
+		<li><a href="#other_classes">Other Classes</a></li>
+		<li><a href="#global_procedures">Global Procedures</a></li>
+		<li><a href="#history">History</a></li>
+		<li><a href="#acknowledgment">Acknowledgment</a></li>
+		<li><a href="#license">License</a></li>
+		<li><a href="#disclaimer">Disclaimer</a></li>
+	</ul>
+<h3 id="overview">OVERVIEW</h3>
+  <p>The print preview components consist of three visual components for low level print and print preview:</p>
+	<ul>
+	  <li><strong><a href="#printpreview">TPrintPreview</a></strong><br />This component acts as a printer replacement to generate pages, and then display and manage them.</li>
+	  <li><strong><a href="#printpreview">TThumbnailPreview</a></strong><br />This component shows pages of TPrintPreview component as thumbnails.</li>
+	  <li><strong><a href="#paperpreview">TPaperPreview</a></strong><br />This component represents a sheet of paper that can be filled by a custom event handler.</li>
+	</ul>
+	<p>All the print preview components are fully customizable, and offer extensive set of events.</p>
+  
+<h3 id="installation">INSTALLATION</h3>
+  <p>Add the following component's unit into a new or existing package:</p>
+  <ul>
+    <li>Preview.pas</li>
+  </ul>
+  <p>The following packages must be added to the <strong>requires</strong> clause of your package:</p>
+  <ul>
+    <li>VCL</li>
+    <li>RTL <small>(for Delphi 6 or higher only)</small></li>
+    <li>DesignIDE <small>(for design-time package of Delphi 6 or higher only)</small></li>
+  </ul>
+  <p>Consider that <code>Preview.pas</code> and <code>DELPHIAREA.INC</code> must be in the search path of Delphi.</p>
+
+<h3 id="printpreview">PRINT PREVIEW COMPONENT</h3>
+	<p>TPrintPreview is a descendent of TScrollBox and has properties of both TScrollBox component and TPrinter class.</p>
+	<p>The key features of the TPrintPreview component are:</p>
+	<ul class="condensed">
+		<li>Supports almost unlimited amount of pages</li>
+		<li>Automatically adjusts printer's paper size and orientation at the print time</li>
+		<li>Automatically adjusts mapping modes</li>
+		<li>Preview pages can be scaled with an arbitrarily zoom factor</li>
+		<li>Shows created pages while new pages are being processed</li>
+		<li>Displayed pages can be scrolled by mouse dragging</li>
+		<li>Pages can be saved/restored to/from disk</li>
+		<li>Each page is accessible as a Windows Metafile image</li>
+		<li>Has some methods for rendering rich text format</li>
+		<li>Can manage custom forms (custom paper sizes)</li>
+		<li>Allows background and annotation for both print and preview pages</li>
+		<li>Both preview and print pages can be converted to grayscale, and you can adjust brightness and contrast of them</li>
+		<li>Allows inserting, replacing, editing, deleting, and reordering of pages freely at any time
+    <li>By using <a href="http://delphistep.cis.si">dsPDF library</a> or <a href="http://www.synopse.info">Synopse PDF library</a>, can save pages as PDF</li>
+    <li>Can save pages as Multi-Page TIFF.</li>
+		<li>Has a complete set of events</li>
+	</ul>
+	<blockquote>
+		<h4 id="printpreview_properties"><span class="indicator">PrintPreview Component</span>KEY PROPERTIES</h4>
+		<ul>
+		  <li><strong>Annotation: Boolean</strong><br />Indicates whether the annotation drawing is active.</li>
+		  <li><strong>Background: Boolean</strong><br />Indicates whether the background drawing is active.</li>
+		  <li><strong>CacheSize: Integer</strong><br />Determines the maximum number of pages that the control can keep in memory.</li>
+		  <li><strong>CanScrollHorz</strong> <sup>(Read-only)</sup><br />Indicates whether the preview page can scroll horizontally.</li>
+		  <li><strong>CanScrollVert</strong> <sup>(Read-only)</sup><br />Indicates whether the preview page can scroll vertically.</li>
+		  <li><strong>Canvas: TCanvas</strong> <sup>(Read-only)</sup><br />Provides access to a drawing surface that represents the page. Each page has its own canvas and any access to this property must be inside <em>BeginDoc</em>/<em>EndDoc</em>, <em>BeginEdit</em>/<em>EndEdit</em>, <em>BeginReplace</em>/<em>EndReplace</em>, <em>BeginInsert</em>/<em>EndInsert</em>, and <em>BeginAppend</em>/<em>EndAppend</em> blocks.</li>
+		  <li><strong>CanvasPageNo: Integer</strong> <sup>(Read-only)</sup><br />Indicates the page number that <em>Canvas</em> belongs to it. When control's canvas is not a page canvas, value of CanvasPageNo is zero.</li>
+		  <li><strong>CurrentPage: Integer</strong><br />Determines the current showing page number.</li>
+		  <li><strong>DirectPrint: Boolean</strong><br />Determines whether the control creates preview pages or directly prints the pages on the printer.</li>
+		  <li><strong>Grayscale: TGrayscaleOptions<br />TGrayscaleOptions = set of TGrayscaleOption<br />TGrayscaleOption = (gsPreview, gsPrint)</strong><br />Indicates whether the preview and/or print pages should be converted to grayscale.<br />
+  			<blockquote>
+  			<table width="90%" border="0" cellspacing="5" cellpadding="0">
+		      <tr>
+		        <td width="15%" valign="top"><strong>gsPreview</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>Shows preview pages in grayscale. However, Background and Anonation items keep their original colors.</td>
+		      </tr>
+		      <tr>
+		        <td width="15%" valign="top"><strong>gsPrint</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>Print pages in grayscale.</td>
+		      </tr>
+		    </table>
+		    </blockquote>
+		  </li>
+		  <li><strong>GrayBrightness: -100..100</strong><br />Determines brightness of pages in grayscale mode.</li>
+		  <li><strong>GrayContrast: -100..100</strong><br />Determines contrast of pages in grayscale mode.</li>
+		  <li><Strong>IsDummyFormName: Boolean</strong> <sup>(Read-only)</sup><br />Indicates whether the <em>FormName</em> property reperesents the printer's form name, or a dummy name generated by the control.
+		  <li><Strong>IsPaperCustom: Boolean</strong> <sup>(Read-only)</sup><br />Indicates whether a custom paper is in use.
+		  <li><Strong>IsPaperRotated: Boolean</strong> <sup>(Read-only)</sup><br />Indicates whether the paper's orientation is landscape.
+		  <li><strong>Font: TFont</strong><br />Specifies the default font for each new page. It is reommended to use a scalable font (e.g. TrueType and OpenType).</li>
+		  <li><strong>FormName: String</strong><br />Determines the name of selected form for the paper size.</li>
+		  <li><strong>Orientation: TPrinterOrientation<br />TPrinterOrientation = (poPortrait, poLanscape)</strong><br />Determines the the paper orientation of pages that will be created. The paper orientation could not change inside the <em>BeginDoc</em> and <em>EndDoc</em> block.</li>
+		  <li><strong>PDFDocumentInfo: TPDFDocumentInfo</strong><br />Specifies Producer, Author, Creator, Subjet, and Title of the output PDF file (See <a href="#SaveAsPDF">SaveAsPDF method</a> and <a href="#printpreview_pdf">PDF Output</a> for details).</li>
+		  <li><strong>Pages[PageNo: Integer]: TMetaFile</strong> <sup>(Read-only)</sup><br />Contains the list of prepared pages.</li>
+		  <li><strong>PageBounds: TRect</strong> <sup>(Read-only)</sup><br />Specifies the bounding rectangle of the page in logical coordinates.</li>
+		  <li><strong>PageSize: TPoint</strong> <sup>(Read-only)</sup><br />Specifies the paper size in logical coordinates.</li>
+		  <li><strong>PageDevicePixels: TPoint</strong> <sup>(Read-only)</sup><br />Specifies the paper size in device coordinates (pixels).</li>
+      <li><strong>PageLogicalPixels: TPoint</strong> <sup>(Read-only)</sup><br />Specifies the paper size in screen coordinates (pixels).</li>
+		  <li><strong>PaperType: TPaperType</strong><br />Specifies the paper size by the paper's type. There are 68 predefined sizes however by setting this property to <em>pCustom</em> you can use <em>PaperWidth</em> and <em>PaperHeight</em> properties to set your own custom paper size.</li>
+		  <li><strong>PaperHeight: Integer</strong><br />Determines the physical height of the paper in logical units. Changing this property will change <em>PaperType</em> to <em>pCustom</em>. The value of <em>PaperHeight</em> must be between 1 and 32767.</li>
+		  <li><strong>PaperWidth: Integer</strong><br />Determines the physical width of the paper in logical units. Changing this property will change <em>PaperType</em> to <em>pCustom</em>. The value of <em>PaperWidth</em> must be between 1 and 32767.</li>
+      <li><strong>PaperView: TPaperPreviewOptions</strong><br />Contains display parameters of the visible preview page (see <a href="#paperpreview">PaperPreview Component</a> for details).</li>
+      <li><strong>PaperViewControl: TPaperPreview</strong><br />Provides access to the control that displays a page (see <a href="#paperpreview">PaperPreview Component</a> for details).</li>
+		  <li><strong>PrintableAreaColor: Color</strong><br />Determines the color to mark printer's printable area.</li>
+		  <li><strong>Printer: TPrinter</strong> <sup>(Read-only)</sup><br />Returns a global instance of TPrinter to manage interaction with the printer.</li>
+		  <li><strong>PrinterInstalled: Boolean</strong> <sup>(Read-only)</sup><br />Indicates whether is there any installed printer (driver) on the system.</li>
+		  <li><strong>PrinterPageBounds: TRect</strong> <sup>(Read-only)</sup><br />Specifies the bounding rectangle of the printer's printable area in logical coordinates.</li>
+		  <li><strong>PrintJobTitle: String</strong><br />Specifies the title of the print job on the system's print queue.</li>
+		  <li><strong>ShowPrintableArea: Boolean</strong><br />When is True, shows bounding rectangle of printer's printable area on the preview.</li>
+		  <li><strong>State: TPreviewState</strong> <sup>(Read-only)</sup><br /><strong>TPreviewState = (psReady, psCreating, psPrinting, psEditing, psLoading, psSaving, psSavingPDF, psSavingTIF)</strong><br />Determines the current state of the control.
+  			<blockquote>
+  			<table width="90%" border="0" cellspacing="5" cellpadding="0">
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psReady</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>The control is idle.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psCreating</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>The <em>BeginDoc</em> method is called and the control is preparing the preview pages to display.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psPrinting</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>One of the print methods is called and the control is printing pages on the printer.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psEditing</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>The <em>BeginEdit</em> method is called and control is editing a page.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psReplacing</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>The <em>BeginReplace</em> method is called and control is replacing a page with a new one.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psInserting</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>Either <em>BeginInsert</em> or <em>BeginAppend</em> method is called and control is inserting/appending a new page.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psLoading</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>The control is loading pages form a stream or file.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psSaving</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>The control is saving pages to a stream or file.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psSavingPDF</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>The control is saving pages as a PDF file.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>psSavingTIF</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>The control is saving pages as a multi-page TIFF image.</td>
+		      </tr>
+		    </table>
+		    </blockquote>
+		  </li>
+      <li><strong>SystemDefaultUnits: TUnits</strong> <sup>(Read-only)</sup><br />Specifies the default measurement unit of the system. This unit is either mmHiMetric or mmHiEnglish.
+		  <li><strong>TotalPages: Integer</strong> <sup>(Read-only)</sup><br />Determines the total number of available pages to preview/print.</li>
+		  <li><strong>Units: TUnits<br />TUnits = (mmPixel, mmLoMetric, mmHiMetric, mmLoEnglish, mmHiEnglish, mmTWIPS, mmPoints)</strong><br />Determines how the control interprets the measurement values (e.g. paper size, margins, font height, pen width, coordinates, and so on).
+  			<blockquote>
+  			<table width="90%" border="0" cellspacing="5" cellpadding="0">
+		      <tr> 
+		        <td width="15%" valign="top"><strong>mmPixel</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>1 unit = 1 pixel</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>mmLoMetric</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>1 unit = 0.1 millimeter</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>mmHiMetric</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>1 unit = 0.01 millimeter</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>mmLoEnglish</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>1 unit = 0.01 inch</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>mmHiEnglish</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>1 unit = 0.001 inch</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>mmTWIPS</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>1 unit = 1 twip = 1/20 point = 1/1440 inch</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>mmPoints</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>1 unit = 1 point = 1/72 inch</td>
+		      </tr>
+		    </table>
+		    </blockquote>
+		  </li>
+		  <li><strong>UsePrinterOptions: Boolean</strong><br />Specifies where the control looks for page information. When UseUserPage is true, the control uses the printer's paper size and orientation to for the paper size, otherwise it uses the paper size and orientation set in the control.</li>
+		  <li><strong>Zoom: Integer</strong><br />Specifies how much the control scales pages on the screen. Changing this property will change <em>ZoomState</em> to <em>zsZoomOther</em>.</li>
+		  <li><strong>ZoomState: TZoomState<br />TZoomState = (zsZoomOther, zsZoomToWidth, zsZoomToHeight, zsZoomToFit)</strong><br />Determines how the control scales pages on the screen.
+  			<blockquote>
+  			<table width="90%" border="0" cellspacing="5" cellpadding="0">
+		      <tr> 
+		        <td width="15%" valign="top"><strong>zsZoomOther</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>Scaling factor determines by <em>Zoom</em> property.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>zsZoomToWidth</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>Whole the page's width will be visible.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>zsZoomToHeight</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>Whole the page's height will be visible.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>zsZoomToFit</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>Whole the page will be visible.</td>
+		      </tr>
+		    </table>
+		    </blockquote>
+		  </li>
+      <li><strong>UserDefaultUnits: TUnits</strong> <sup>(Read-only)</sup><br />Specifies the prefered measurement unit of the user. This unit is either mmHiMetric or mmHiEnglish.
+		  <li><strong>ZoomSavePos: Boolean</strong><br />Indicates whether the control keeps the old scroll positions when the zoom is changing.</li>
+		  <li><strong>ZoomStep: Integer</strong><br />Determines the amount of changes in zoom percentage when it increments or decrements by a keyboard shurtcut or mouse wheel movement.</li>
+		  <li><strong>ZoomMin: Integer</strong><br />Determines the minimum allowed value for the <em>Zoom</em> property.</li>
+		  <li><strong>ZoomMax: Integer</strong><br />Determines the maximum allowed value for the <em>Zoom</em> property.</li>
+		</ul>
+		<h4 id="printpreview_methods"><span class="indicator">PrintPreview Component</span>KEY METHODS</h4>
+		<ul>
+		  <li><strong>procedure BeginDoc</strong><br />Initiates a new job and creates the <em>Canvas</em>.</li>
+		  <li><strong>procedure EndDoc</strong><br />Finalizes the current job.</li>
+		  <li><strong>procedure NewPage</strong><br />Starts a new page.</li>
+		  <li><strong>function BeginEdit(PageNo: Integer): Boolean</strong><br />Intializes <em>Canvas</em> to edit the page specified by the PageNo parameter.</li>
+		  <li><strong>procedure EndEdit(Cancel: Boolean)</strong><br />Finalizes editing the page. When Cancel parameter is True, the modification is ignored.</li>
+		  <li><strong>function BeginReplace(PageNo: Integer): Boolean</strong><br />Intializes <em>Canvas</em> to replace the page specified by the PageNo parameter with a new one.<br />Calling this method raises the <em>OnNewPage</em> event.</li>
+		  <li><strong>procedure EndReplace</strong><br />Finalizes replacing the page. When Cancel parameter is True, the modification is ignored.</li>
+		  <li><strong>function BeginInsert(PageNo: Integer): Boolean</strong><br />Intializes <em>Canvas</em> to insert a new page before the page specified by the PageNo parameter. To insert the new page as the last page, pass a value large than <em>TotalPages</em> property as PageNo parameter.<br />Calling this method raises the <em>OnNewPage</em> event.</li>
+		  <li><strong>procedure EndInsert</strong><br />Finalizes inserting the new page. When Cancel parameter is True, the modification is ignored.</li>
+		  <li><strong>function BeginAppend: Boolean</strong><br />Intializes <em>Canvas</em> to insert a new page at the end of pages.<br />Calling this method raises the <em>OnNewPage</em> event.</li>
+		  <li><strong>procedure EndAppend</strong><br />Finalizes appending the new page. When Cancel parameter is True, the modification is ignored.</li>
+		  <li><strong>function Delete(PageNo: Integer): Boolean</strong><br />Removes the specified page.</li>
+		  <li><strong>function Exchange(PageNo1, PageNo2: Integer): Boolean</strong><br />Swaps content of the specified pages.</li>
+		  <li><strong>function Move(PageNo, NewPageNo: Integer): Boolean</strong><br />Changes position of the specified page to the new location.</li>
+		  <li><strong>procedure Clear</strong><br />Clears all pages and resets the control.</li>
+		  <li><strong>procedure Print</strong><br />Sends all pages to the printer.</li>
+		  <li><strong>procedure PrintPages(FromPage, ToPage: Integer)</strong><br />Sends the selected range of pages to the printer.</li>
+		  <li><strong>procedure PrintPagesEx(Pages: TIntegerList)</strong><br />Sends the selected pages to the printer.</li>
+		  <li><strong>procedure LoadFromStream(Stream: TStream)</strong><br />Loads pages from a stream.</li>
+		  <li><strong>procedure SaveToStream(Stream: TStream)</strong><br />Saves pages into a stream.</li>
+		  <li><strong>procedure LoadFromFile(const FileName: String)</strong><br />Loads pages from a previously saved file.</li>
+		  <li><strong>procedure SaveToFile(const Filename: String)</strong><br />Saves pages into a file.</li>
+		  <li><strong>procedure SaveAsTIF(const Filename: String)</strong><br />Saves pages as a multi-frame TIFF image.</li>
+		  <li><strong>function CanSaveAsTIF: Boolean</strong><br />Returns True if GDI+ is enabled to save pages as a multi-frame TIFF image.</li>
+		  <li><strong id="SaveAsPDF">procedure SaveAsPDF(const Filename: String)</strong><br />Saves pages as a PDF file.</li>
+		  <li><strong>function CanSaveAsPDF: Boolean</strong><br />Returns True if PDF writer module is installed.</li>
+		  <li><strong>procedure UpdateAnnotation</strong><br />Forces the control to redraw the current page's annotation and update the screen.</li>
+		  <li><strong>procedure UpdateBackground</strong><br />Forces the control to redraw the current page's background and update the screen.</li>
+		  <li><strong>procedure UpdateZoom</strong><br />Forces the control to recalculate zoom scale and update the screen.</li>
+		  <li><strong>procedure ConvertPoints(var Points; NumPoints: Integer; InUnits, OutUnits: TUnits)</strong><br />Converts the Points' coordinates from the input unit specified by InUnits parameter to the unit specified by the OutUnits.</li>
+		  <li><strong>function ConvertXY(X, Y: Inetger; InUnits, OutUnits: TUnits): TPoint</strong><br />Returns the point's coordinate converted from the input unit specified by InUnits parameter to the unit specified by the OutUnits.</li>
+		  <li><strong>function ConvertX(X: Integer; InUnits, OutUnits: TUnits): Integer</strong><br />Returns the conversion of a value reperesenting a horizontal offset or size from the input unit specified by InUnits parameter to the unit specified by the OutUnits.</li>
+		  <li><strong>function ConvertY(Y: Integer; InUnits, OutUnits: TUnits): Integer</strong><br />Returns the conversion of a value reperesenting a vertical offset or size from the input unit specified by InUnits parameter to the unit specified by the OutUnits.</li>
+		  <li><strong>function BoundsFrom(AUnits: TUnits; ALeft, ATop, AWidth, AHeight: Integer): TRect</strong><br />Converts a rectangle specified by its position and size from the specified measurement unit to the preview's units.</li>
+		  <li><strong>function RectFrom(AUnits: TUnits; ALeft, ATop, ARight, ABottom: Integer): TRect</strong><br />Converts a rectangle specified by its corner positions from the specified measurement unit to the preview's units.</li>
+		  <li><strong>function PointFrom(AUnits: TUnits; X, Y: Integer): TRect</strong><br />Converts a point from the specified measurement unit to preview's unit.</li>
+		  <li><strong>function XFrom(AUnits: TUnits; X: Integer): TRect</strong><br />Converts a value reperesenting a horizontal offset or size from the specified measurement unit to preview's unit.</li>
+		  <li><strong>function YFrom(AUnits: TUnits; Y: Integer): TRect</strong><br />Converts a value reperesenting a vertical offset or size from the specified measurement unit to preview's unit.</li>
+		  <li><strong>function PaintGraphic(X, Y: Integer; Graphic: TGraphic): TPoint</strong><br />Renders the graphic specified by the Graphic parameter on the canvas at the location given by the coordinates (X, Y). The coordinates are in the preview's unit. The function returns the size of the graphic in the preview's unit.</li>
+		  <li><strong>function PaintGraphicEx(const Rect: TRect; Graphic: TGraphic; Proporional, ShrinkOnly, Cnter: Boolean): TRect</strong><br />Draws the graphic specified by the Graphic parameter in the rectangle specified by the Rect parameter. The coordinates are in the preview's unit. The function returns the bounding rectangle of the graphic in the preview's unit.</li>
+		  <li><strong>function PaintGraphicEx2(const Rect: TRect; Graphic: TGraphic; VertAlign: TVertAlign; HorzAlign: THorzAlign): TRect;</strong><br />Draws the graphic specified by the Graphic parameter in the rectangle specified by the Rect parameter. The coordinates are in the preview's unit. The function returns the bounding rectangle of the graphic in the preview's unit.</li>
+		  <li><strong>function PaintWinControl(X, Y: Integer; WinControl: TWinControl): TPoint</strong><br />Renders the windowed control specified by the WinControl parameter on the canvas at the location given by the coordinates (X, Y). The coordinates are in the preview's unit. The function returns the size of the rendered image in the preview's unit.</li>
+		  <li><strong>function PaintWinControlEx(const Rect: TRect; WinControl: TWinControl; Proporional, ShrinkOnly, Cnter: Boolean): TRect</strong><br />Draws the windowed control specified by the WinControl parameter in the rectangle specified by the Rect parameter. The coordinates are in the preview's unit. The function returns the bounding rectangle of the graphic in the preview's unit.</li>
+      <li><strong>function PaintWinControlEx2(const Rect: TRect; Graphic: TGraphic; VertAlign: TVertAlign; HorzAlign: THorzAlign): TRect;</strong><br />Draws the windowed control specified by the WinControl parameter in the rectangle specified by the Rect parameter. The coordinates are in the preview's unit. The function returns the bounding rectangle of the graphic in the preview's unit.</li>
+		  <li><strong>funtion PaintRichText(const Rect: TRect; RichEdit: TCustomRichEdit; MaxPages: Integer; pOffset: PInteger): Integer</strong><br />Renders the content of the RichEdit control specified by the RichEdit parameter in the rectangle specified by the Rect parameter. The coordinates are in the preview's unit. If the content does not fit to the specified rectangle, the functions draw the rest in a new page. The function returns the number of pages used to render the content. The maximum number of pages allowed to print can be controlled by the MaxPages parameter. When MaxPages is zero, the function prints all the pages. The pOffset parameter is a pointer to an integer containing the offset (zero based) of the text, which rendering begins from that point. When the function does not render all the pages, the variable pointed by pOffset updates to the offset of the next part of the text that should be rendered in the next call, otherwise it sets to -1. The pOffset parameter can be nil. The functions returns the number of pages that are rendered.</li>
+		  <li><strong>funtion GetRichTextRect(var Rect: TRect; RichEdit: TCustomRichEdit; pOffset: PInteger): Integer</strong><br />Claulates the smallest bounding rectangle required for rendering one page of the content of the RichEdit control specified by the RichEdit parameter in the rectangle specified by the Rect parameter. The coordinates are in the preview's unit. The pOffset parameter is a pointer to an integer containing the offset (zero based) of the text, which rendering begins from that point. When the content of the rich edit does not fit into the specified rectangle, the variable pointed by pOffset updates to the offset of the next part of the text that, otherwise it sets to -1. The pOffset parameter can be nil. The functions returns the number of bottom of the bounding rectangle..</li>
+		  <li><strong>procedure GetPrinterOptions</strong><br />Gets the paper size and orientation of the control from the currently selected printer's paper and orientation. When the <em>UsePrinterOptions</em> property is True, after calling the <em>BeginDoc</em> method, the control automatically gets the paper size and paper orientation from the current printer.</li>
+		  <li><strong>procedure SetPrinterOptions</strong><br />Sets the paper and orientation of the currently selected printer to paper size and orientation of the control. When the <em>UsePrinterOptions</em> property is False, the control automatically calls this method before beginning to print.</li>
+		  <li><strong>procedure SetPageSetupParameters(PageSetupDialog: TPageSetupDialog)</strong> <sup class="note">(Delphi 7 and later only)</sup><br />Sets the paper size and orientation of the page setup dialog to the control's paper size and orientation.</li>
+		  <li><strong>function GetPageSetupParameters(PageSetupDialog: TPageSetupDialog): TRect</strong> <sup class="note">(Delphi 7 and later only)</sup><br />Gets the paper size and orientation from the page setup dialog. This function returns the bounding rectangle of the page after applying margins specified by the page setup dialog.</li>
+      <li><strong>function ScreenToPreview(X, Y: Integer): TPoint</strong><br />Translates a given point in pixels from the screen resolution to the preview's unit.</li>
+      <li><strong>function PreviewToScreen(X, Y: Integer): TPoint</strong><br />Translates a given point in preview's unit to pixels in screen resolution.</li>
+      <li><strong>function ScreenToPaper(const Pt: TPoint): TPoint</strong><br />Translates a given point from screen coordinates to the paper coordinates. The paper coordinates are in the currently selected measurement unit.</li>
+      <li><strong>function PaperToScreen(const Pt: TPoint): TPoint</strong><br />Translates a given point from the paper coordinates to screen coordinates. The paper coordinates are in the currently selected measurement unit.</li>
+      <li><strong>function ClientToPaper(const Pt: TPoint): TPoint</strong><br />Translates a given point from client area coordinates to the paper coordinates. The paper coordinates are in the currently selected measurement unit.</li>
+		  <li><strong>function PaperToClient(const Pt: TPoint): TPoint</strong><br />Translates a given point from the paper coordinates to the client area coordinates. The paper coordinates are in the currently selected measurement unit.</li>
+		  <li><strong>function FetchFormNames(FormNames: TStrings): Boolean</strong><br />Fills the specified list with the name of available (predefined and custom) forms in the system.</li>
+		  <li><strong>function GetFormSize(const AFormName: String; out FormWidth, FormHeight: Integer): Boolean</strong><br />Gets width and height of the specified form in the selected measurement unit.</li>
+		  <li><strong>function AddNewForm(const AFormName: String; FormWidth, FormHeight): Boolean;</strong><br />Adds a custom form to the system. The form's size should be expressed in the selected measurement unit. The user must have full rights to the printer driver to call this function.</li>
+		  <li><strong>function RemoveForm(const AFormName: String): Boolean</strong><br />Removes a custom form. This function does not delete the standard forms that the operating system defines. The user must have full rights to the printer driver to call this function.</li>
+		  <li><strong>procedure DrawPage(PageNo: Integer; Canvas: TCanvas; const Rect: TRect; Gray: Boolean)</strong><br />Draws a preview page specified by its page number on the specified canvas and bouding rectangle.</li>
+		</ul>
+		<h4 id="printpreview_events"><span class="indicator">PrintPreview Component</span>KEY EVENTS</h4>
+		<ul>
+		  <li><strong>OnAnnotation: TPreviewPageDrawEvent<br />TPreviewPageDrawEvent = procedure(Sender: TObject; PageNo: Integer; Canvas: TCanvas) of object</strong><br />If <em>Annotation</em> proprty set to True, occurs after a page is displayed. The items drawn on the provided canvas will appear over the preview page, but do not appear on print.</li>
+		  <li><strong>OnBackground: TPreviewPageDrawEvent<br />TPreviewPageDrawEvent = procedure(Sender: TObject; PageNo: Integer; Canvas: TCanvas) of object</strong><br />If <em>Background</em> proprty set to True, occurs just before a page being displayed. The items drawn on the provided canvas will appear under the preview page, but do not appear on print.</li>
+		  <li><strong>OnBeginDoc: TNotifyEvent</strong><br />Occurs when <em>BeginDoc</em> method calls.</li>
+		  <li><strong>OnEndDoc: TNotifyEvent</strong><br />Occurs when <em>EndDoc</em> method calls.</li>
+		  <li><strong>OnNewPage: TNotifyEvent</strong><br />Occurs immediately after a new page is created.</li>
+		  <li><strong>OnEndPage: TNotifyEvent</strong><br />Occurs when a page is finished.</li>
+		  <li><strong>OnChange: TNotifyEvent</strong><br />Occurs when the current page or content of the control changes.</li>
+		  <li><strong>OnStateChange: TNotifyEvent</strong><br />Occurs when value of <em>State</em> property changes.</li>
+		  <li><strong>OnZoomChange: TNotifyEvent</strong><br />Occurs when the zoom ratio of the view is changed.</li>
+		  <li><strong>OnPaperChange: TNotifyEvent</strong><br />Occurs when size of orientation of paper changed.</li>
+		  <li><strong>OnBeforePrint: TNotifyEvent</strong><br />Occurs just before sending pages to the printer.</li>
+		  <li><strong>OnAfterPrint: TNotifyEvent</strong><br />Occurs when printing process is finished.</li>
+      <li><strong>OnProgress: TPreviewProgressEvent<br />TPreviewProgressEvent = procedure(Sender: TObject; Done, Total: Integer) of object</strong><br />Occurs periodically during the print and save as PDF and TIFF operations. You can check the value of <em>State</em> property to determine which operation is generating this event.</li>
+      <li><strong>OnPageProcessing: TPreviewPageProcessingEvent<br />TPreviewPageProcessingEvent = procedure(Sender: TObject; PageNo: Integer; var Choice: TPageProcessingChoice) of object<br />TPageProcessingChoice = (pcAccept, pcIgnore, pcCancellAll)</strong><br />Occurs during the print and save as PDF and TIFF operations, just before processing a page. You can check the value of <em>State</em> property to determine which operation is generating this event.<br /><br />The <em>Choice</em> parameter can be set to one of the following values:
+        <blockquote>
+        <table width="90%" border="0" cellspacing="5" cellpadding="0">
+          <tr> 
+            <td width="15%" valign="top"><strong>pcAccept</strong> <sup>(default)</sup></td>
+            <td width="20">&nbsp;</td>
+            <td>The operation will process the page.</td>
+          </tr>
+          <tr> 
+            <td width="15%" valign="top"><strong>pcIgnore</strong></td>
+            <td width="20">&nbsp;</td>
+            <td>The operation will ignore this page.</td>
+          </tr>
+          <tr> 
+            <td width="15%" valign="top"><strong>pcCancellAll</strong></td>
+            <td width="20">&nbsp;</td>
+            <td>The whole operation will be cancelled.</td>
+          </tr>
+        </table>
+        </blockquote>
+      </li>
+		  <li><strong>OnPrintAnnotation: TPreviewPageDrawEvent<br />TPreviewPageDrawEvent = procedure(Sender: TObject; PageNo: Integer; Canvas: TCanvas) of object</strong><br />If <em>Annotation</em> proprty set to True, occurs after a page is printed. The items drawn on the provided canvas will place over the printed page.</li>
+		  <li><strong>OnPrintBackground: TPreviewPageDrawEvent<br />TPreviewPageDrawEvent = procedure(Sender: TObject; PageNo: Integer; Canvas: TCanvas) of object</strong><br />If <em>Background</em> proprty set to True, occurs just before a page being printed. The items drawn on the provided canvas will place under the printed page.</li>
+		</ul>
+		<h4 id="printpreview_keyboard_shortcuts"><span class="indicator">PrintPreview Component</span>KEYBOARD SHURTCUTS</h4>
+		<ul>
+			<li><strong>Home</strong><br />Scrolls the current page to the left most position.</li>
+			<li><strong>Ctrl+Home</strong><br />Scrolls the current page to the top most position.</li>
+			<li><strong>End</strong><br />Scrolls the current page to the right most position.</li>
+			<li><strong>Ctrl+End</strong><br />Scrolls the current page to the bottom most position.</li>
+			<li><strong>Left</strong><br />Scrolls the current page to the right with the number of pixels specified in <em>HorzScrollbar.Increment</em> property.</li>
+			<li><strong>Shift+Left </strong><br />Scrolls the current page one pixel to the right.</li>
+			<li><strong>Ctrl+Left</strong><br />Scrolls the current page one screen to the right.</li>
+			<li><strong>Right</strong><br />Scrolls the current page to the left with the number of pixels specified in <em>HorzScrollbar.Increment</em> property.</li>
+			<li><strong>Shift+Right</strong><br />Scrolls the current page one pixel to the left.</li>
+			<li><strong>Ctrl+Right</strong><br />Scrolls the current page one screen to the left.</li>
+			<li><strong>Up</strong><br />Scrolls the current page down with the number of pixels specified in <em>VertScrollbar.Increment</em> property.</li>
+			<li><strong>Shift+Up</strong><br />Scrolls the current page one pixel down.</li>
+			<li><strong>Ctrl+Up</strong><br />Scrolls the current page one screen down.</li>
+			<li><strong>Down</strong><br />Scrolls the current page up with the number of pixels specified in <em>VertScrollbar.Increment</em> property.</li>
+			<li><strong>Shift+Down</strong><br />Scrolls the current page one pixel up.</li>
+			<li><strong>Ctrl+Down</strong><br />Scrolls the current page one screen up.</li>
+			<li><strong>Page Up</strong><br />Shows the previous page.</li>
+			<li><strong>Ctrl+Page Up</strong><br />Shows the first page.</li>
+			<li><strong>Page Down</strong><br />Shows the next page.</li>
+			<li><strong>Ctrl+Page Down</strong><br />Shows the last page.</li>
+			<li><strong>Plus (Numeric Pad)</strong><br />Zoom in by the amount specified in the ZoomStep property.</li>
+			<li><strong>Minus (Numeric Pad)</strong><br />Zoom out by the amount specified in the ZoomStep property.</li>
+		</ul>
+		<h4 id="printpreview_mouse_wheel"><span class="indicator">PrintPreview Component</span>MOUSE WHEEL FUNCTIONS</h4>
+		<ul>
+			<li><strong>Wheel Down</strong><br />Scrolls the current page up with the number of pixels specified in <em>VertScrollbar.Increment</em> property.</li>
+			<li><strong>Wheel Up</strong><br />Scrolls the current page down with the number of pixels specified in <em>VertScrollbar.Increment</em> property.</li>
+			<li><strong>Ctrl+Wheel Down</strong><br />Zoom out by the amount specified in the ZoomStep property.</li>
+			<li><strong>Ctrl+Wheel Up </strong><br />Zoom in by the amount specified in the ZoomStep property.</li>
+			<li><strong>Shift+Wheel Down | Wheel Press + Wheel Down</strong><br />Shows the next page.</li>
+			<li><strong>Shift+Wheel Up | Wheel Press + Wheel Up</strong><br />Shows the previous page.</li>
+		</ul>
+		<h4 id="printpreview_pdf"><span class="indicator">PrintPreview Component</span>PDF OUTPUT</h4>
+			<p>To save preview pages in PDF format, you should have either dsPDF library or Synopse PDF library</p>
+      <h5>dsPDF Library</h5>
+      <p>You can find dsPDF library at <a href="http://delphistep.cis.si" target="_blank">http://delphistep.cis.si</a>, under freeware components section.</p>
+			<p>Please consider that dsPdf is postcardware, and demo version displays message &quot;This is demo&quot;. If you want to get the library without the demo message, you must send the author (<a href="mailto:odisej@email.si">Grega Loboda</a>) a postcard of the town or city you live via (snail) mail.</p>
+			<p><strong>Note: </strong>The demo version of dsPdf library does not save document properties (Producer, Author, Creator, Subject, and Title of the document).</p>
+      <h5>Synopse PDF Library</h5>
+      <p>You can download Synopse PDF library from <a href="http://www.synopse.info" target="_blank">http://www.synopse.info</a>, and it is freeware.</p>
+      <p>After obtaining Synopse PDF library, open the Preview.pas file and define the <strong>SYNOPSE</strong> compiler directive in the begining of the file.</p>
+      <p><strong>Note: </strong>Synopse PDF library is still in development stage, and may fail to generate PDF for some sort of contents.</p>
+		<h4 id="printpreview_image_transparency">IMAGE TRANSPARENCY</h4>
+			<p>As default, TPrintPreview does not allow image transparency because transparency on printers is not guaranteed. As a work around, you can combine images as needed, and then draw the final image to the printer.</p>
+			<p>However, if you need image transparency and you think that all target printers of your application will support SrcErase, srcAnd, and SrcInvert raster operations, you can set <strong>AllowTransparentDIB</strong> global variable to True, so that the control takes care of transparent images.</p>
+		<h4 id="printpreview_third_party_rich_edit_controls"><span class="indicator">PrintPreview Component</span>THIRD PARTY RICH EDIT CONTROLS</h4>
+			<p>There are some third party rich edit controls that are not derived from TCustomRichEdit class (e.g. TRxRichEdit control of <a href="http://sourceforge.net/projects/rxlib/">RxLibrary</a>). In other hand, <em>PaintRichText</em> and <em>GetRichTextRect</em> methods of the TPrintPreview component expect a TCustomRichEdit as their <em>RichEdit</em> parameter.<p>
+			<p>To workaround this problem and pass such kind of controls to <em>PaintRichText</em> or <em>GetRichTextRect</em> methods, safely type cast the control to TCustomRichEdit. The TPrintPreview component needs only Handle property of rich edit controls for sending Windows messages to them.</p>
+			<p>Actually, in this way you can print any control that supports EM_GETTEXTLENGTHEX and EM_FORMATRANGE messages.</p>
+		<h4 id="printpreview_known_bugs"><span class="indicator">PrintPreview Component</span>KNOWN ISSUES</h4>
+		<ul>
+			<li>If <em>Units</em> property is set to <em>mmHiMetric</em> and width or height of the paper size is bigger than 32767 units, the page will not display correctly. This happens because SetWindowExtEx API function expects a two bytes signed integer (Smallint) as its X and Y parameters, so values bigger than 32767 are interpreted as negative values.</li>
+			<li>When the zoom is not on the actual size (100%), the control may display the preview of the scalable fonts inproperly. Always use TrueType or OpenType fonts in your print.</li>
+			<li>The PaintRichText and GetRichTextRect methods use EM_FORMATRANGE message of the rich edit control. This message has different behavior on different versions of the rich edit control. In addition, this message ignores the embedded objects in the RTF text.</li>
+			<li>The preview of a rich text may differ from its printed version. This issue is a known rich edit control problem. To print RTF text, it is recommended to set <em>DirectPrint</em> property to True and regenerate the pages.</li>
+			<li>After editing a page (e.g. calling <em>BeginEdit</em> method) for several times, you see this action gets slower each time. Editing page involves merging two Windows metafiles, adding new content to the old page. Windows API has problem on merging metafiles, and I cannot do anything about it. If you need to edit a page more than 10 times, it's better to create a new page and replace it with the old one (e.g. calling <em>BeginReplace</em> method).
+		</ul>
+	</blockquote>
+
+<h3 id="thumbnailpreview">THUMBNAIL PREVIEW COMPONENT</h3>
+	<p>The TThumbnailPreview control is a special ListView for showing thumbnails of pages generated by TPrintPreview control.</p>
+	<p>Not only you can use this control to show thumbnail of pages, but also the users can get benefit of it to do some actions (e.g. delete, print, reorder, ...) on the selected pages.</p>
+	<blockquote>
+		<h4 id="thumbnailpreview_properties"><span class="indicator">ThumbnailPreview Component</span>KEY PROPERTIES</h4>
+		<ul>
+    	<li><strong>AllowReorder: Boolean</strong><br />When set to true, user can reorder pages using drag and drop opration.</li>
+      <li><strong>DisableTheme: Boolean</strong><br />Specifies whether the control should bypass Windows theme or not.</li>
+      <li><strong>DropTarget: Integer</strong> <sup>(Read-only)</sup><br />Specifies the number of page that is target of drag operation.</li>
+    	<li><strong>Grayscale: TThumbnailGrayscale<br />TThumbnailGrayscale = (tgsPreview, tgsNever, tgsAlways)</strong><br />Determines whether the thumbnails should be displayed in grayscale.
+  			<blockquote>
+  			<table width="90%" border="0" cellspacing="5" cellpadding="0">
+		      <tr> 
+		        <td width="15%" valign="top"><strong>tgsPreview</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>The value of Grayscale property of the attached TPrintPreview control determines whether the thumbnails are in grayscale ro not.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>tgsNever</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>Regardless of the value of Grayscale property of the attached TPrintPreview control, the thumbnails never display in grayscale.</td>
+		      </tr>
+		      <tr> 
+		        <td width="15%" valign="top"><strong>tgsAlways</strong></td>
+		        <td width="20">&nbsp;</td>
+		        <td>Regardless of the value of Grayscale property of the attached TPrintPreview control, the thumbnails always display in grayscale.</td>
+		      </tr>
+		    </table>
+		    </blockquote>
+    	</li>
+    	<li><strong>IsGrayscaled</strong> <sup>(Read-only)</sup><br />Indicates whether the thumbnails are currently grayscaled.</li>
+    	<li><strong>MarkerColor: TColor</strong><br />Determines the border color around the thumbnail page which is the current page on the PrintPreview control.</li>
+    	<li><strong>PrintPreview: TPrintPreview</strong><br />Determines the PrintPreview control that feeds pages to the control.</li>
+    	<li><strong>Selected: Integer</strong><br />Specifies the number of page that is selected. In a multiselect scenario, this is the first selected page.</li>
+    	<li><strong>SpacingHorizontal: Integer</strong><br />Specifies the horizontal space (in pixels) between two thumbnails.</li>
+    	<li><strong>SpacingVertical: Integer</strong><br />Specifies the vertical space (in pixels) between two thumbnails.</li>
+    	<li><strong>Zoom: Integer</strong><br />Specifies the relative size of each thumbnail to its actual page size in percent.</li>
+    </ul>
+		<h4 id="thumbnailpreview_methods"><span class="indicator">ThumbnailPreview Component</span>KEYKEY METHODS</h4>
+		<ul>
+    	<li><strong>function PageAt(X, Y: Integer): Integer</strong><br />Returns the page number of thumbnail at the specified location of the control's client area or zero if no thumbnail found.</li>
+    	<li><strong>procedure PageAtCursor</strong><br />Returns the page number of thumbnail under the mouse cursor or zero if no thumbnail found.</li>
+    	<li><strong>procedure GetSelectedPages(Pages: TIntegerList)</strong><br />Fills the list with page number of currently selected thumbnails.</li>
+    	<li><strong>procedure SetSelectedPages(Pages: TIntegerList)</strong><br />Selects the thumbnails with the specified page numbers.</li>
+    	<li><strong>procedure DeleteSelected</strong>Removes the selected pages.</li>
+    	<li><strong>procedure PrintSelected</strong>Print the selected pages.</li>
+    </ul>
+		<h4 id="thumbnailpreview_events"><span class="indicator">ThumbnailPreview Component</span>KEYKEY EVENTS</h4>
+		<ul>
+		  <li><strong>OnPageBeforeDraw: TPageThumbnailDrawEvent<br />TPageThumbnailDrawEvent = procedure(Sender: TObject; PageNo: Integer; Canvas: TCanvas; const Rect: TRect; var DefaultDraw: Boolean) of object</strong><br />Occurs before a thumbnail beging drawn.</li>
+		  <li><strong>OnPageAfterDraw: TPageThumbnailDrawEvent<br />TPageThumbnailDrawEvent = procedure(Sender: TObject; PageNo: Integer; Canvas: TCanvas; const Rect: TRect; var DefaultDraw: Boolean) of object</strong><br />Occurs after a thumbnail is drawn.</li>
+    	<li><strong>OnPageClick: TPageNotifyEvent<br />TPageNotifyEvent = procedure(Sender: TObject; PageNo: Integer) of object</strong><br />Occurs when the user clicks a thumbnail.</li>
+    	<li><strong>OnPageDblClick: TPageNotifyEvent<br />TPageNotifyEvent = procedure(Sender: TObject; PageNo: Integer) of object</strong><br />Occurs when the user double clicks a thumbnail.</li>
+    	<li><strong>OnPageInfoTip: TPageInfoTipEvent<br />TPageInfoTipEvent = procedure(Sender: TObject; PageNo: Integer; var InfoTip: String) of object</strong><br />Occurs when the mouse pointer moves over a thumbnail that can display an InfoTip text.</li>
+    	<li><strong>OnPageSelect: TPageNotifyEvent<br />TPageNotifyEvent = procedure(Sender: TObject; PageNo: Integer) of object</strong><br />Occurs when a page selected.</li>
+    	<li><strong>OnPageUnselect: TPageNotifyEvent<br />TPageNotifyEvent = procedure(Sender: TObject; PageNo: Integer) of object</strong><br />Occurs when a selected page deselects.</li>
+    </ul>
+  </blockquote>
+    
+<h3 id="paperpreview">PAPER PREVIEW COMPONENT</h3>
+	<p></p>
+	<p>The TPaperPreview control represents a sheet of paper in the TPrintPreview control, but you can use it as standalone too.</p>
+	<p>Usage of the TPaperPreview control is very similar to TPainBox control of Delphi. However, in opposite of TPainBox, the TPaperPreview control only repaints the invalidated area and caches the last paint and do not generate redundant OnPaint events. Because of that, when you need to repaint its content, you have to explicitly call one of Invalidate or Repaint methods.</p>
+	<p>The TPaperPreview control also can be captioned. In this case the caption appears under the page.</p>
+	<blockquote>
+		<h4 id="paperpreview_properties"><span class="indicator">PaperPreview Component</span>KEYKEY PROPERTIES</h4>
+		<ul>
+    	<li><strong>Alignment: TAlignment</strong><br />Controls the horizontal placement of the caption.</li>
+    	<li><strong>BorderColor: TColor</strong><br />Determines the color of border around the pager.</li>
+    	<li><strong>BorderWidth: TBorderWidth</strong><br />Determines the size of border around the pager.</li>
+    	<li><strong>Caption: String</strong><br />Specifies the text that appears under the paper.</li>
+    	<li><strong>PageRect: TRect</strong> <sup>(Read-only)</sup><br />Gets the bounding box of the paper in control's coordinates.</li>
+    	<li><strong>PaperWidth: Integer</strong><br />Indicates the value of width (in pixels) of the page.</li>
+    	<li><strong>PaperHeight: Integer</strong><br />Indicates the value of height (in pixels) of the page.</li>
+    	<li><strong>PaperSize: TPoint</strong><br />Gets and sets width and height (in pixels) of the paper all at once.</li>
+    	<li><strong>PreservePaperSize: Boolean</strong><br />When set to True, changes in <em>BorderSize</em>, <em>ShadowSize</em>, <em>Caption</em>, and <em>ShowCaption</em> properties do not alter value of <em>PaperWidth</em> and <em>PaperHeight</em> properties and change control's size. When set to False, the control's size keeps constant but <em>PaperWidth</em> and <em>PaperHeight</em> properties adjust to the available space.</li>
+    	<li><strong>ShadowColor: TColor</strong><br />Determines the color of paper's shadow.</li>
+    	<li><strong>ShadowWidth: TBorderWidth</strong><br />Determines the size of shadow for the paper.</li>
+    	<li><strong>ShowCaption: Boolean</strong><br />Indicates whether the control's caption is visible.</li>
+    </ul>
+		<h4 id="paperpreview_methods"><span class="indicator">PaperPreview Component</span>KEY METHODS</h4>
+		<ul>
+      <li><strong>function ClientToPaper(const Pt: TPoint): TPoint</strong><br />Translates a point on the client area of the control to its corresponding point on the paper area.<br /></li>
+      <li><strong>function PaperToClient(const Pt: TPoint): TPoint</strong><br />Translates a point on the paper area to its corresponding point on the client area of the control.<br /></li>
+      <li><strong>procedure SetBoundsEx(ALeft, ATop, APaperWidth, APaperHeight: Integer)</strong><br />Sets the Left, Top, PaperWidth, and PaperHeight properties all at once.<br /></li>
+    </ul>
+		<h4 id="paperpreview_events"><span class="indicator">PaperPreview Component</span>KEY EVENTS</h4>
+		<ul>
+    	<li><strong>OnPaint: TPaperPaintEvent<br />TPaperPaintEvent = procedure(Sender: TObject; Canvas: TCanvas; const Rect: TRect) of object</strong><br />Occurs when the paper needs to be painted.<br />Because the control caches the last paint, you need to call one of <em>Invalidate</em> or <em>Repaint</em> methods to update the paper's content.</li>
+    </ul>
+  </blockquote>
+<h3 id="other_classes">OTHER CLASSES</h3>
+<ul>
+  <li><strong>class TTemporaryFileStream = class(THandleStream)</strong><br />This is an optimal temporary file stream.</li>
+  <li><strong>class TIntegerList = class(TList)</strong><br />Holds a list of integer values. Also, can save/load the list of values to/from a stream.</li>
+  <li><strong>class TMetafileList = class(TObject)</strong><br />Holds a list of Metafile images with memory optimization and caching capabilities.</li>
+</ul>
+<h3 id="global_procedures">GLOBAL PROCEDURES</h3>
+<ul>
+  <li><strong>function ConvertUnits(Value, DPI: Integer; InUnits, OutUnits: TUnits): Integer</strong><br />Returns the conversion of the value specified by the Value parameter from the measurement unit specified by the InUnits parameter to the measurement unit specified by the OutUnit parameter. If neither source nor destination units are mmPixel, the DPI parameter will be ignored.</li>
+  <li><strong>procedure DrawGraphic(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic)</strong><br />Converts the graphic specified by the Graphic parameter to Device Independent Bitmap (DIB) and draws it at the position specified by the X and Y parameters on the canvas specified by the Canvas parameter. This procedure is useful for printing images on a printer canvas.</li>
+  <li><strong>procedure StretchDrawGraphic(Canvas: TCanvas; Rect: TRect; Graphic: TGraphic)</strong><br />Converts the graphic specified by the Graphic parameter to Device Independent Bitmap (DIB) and draws it in the rectangle specified by the Rect parameter on the canvas specified by the Canvas parameter. This procedure is useful for printing images on a printer canvas.</li>
+  <li><strong>procedure DrawGrayscale(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic; Brightness: Integer = 0; Contrast: Integer = 0)</strong><br />Converts the graphic specified by the Graphic parameter to 256 grayscaled colors Device Independent Bitmap (DIB) and draws it at the position specified by the X and Y parameters on the canvas specified by the Canvas parameter. This procedure is useful for printing images on a printer canvas.</li>
+  <li><strong>procedure StretchDrawGrayscale(Canvas: TCanvas; Rect: TRect; Graphic: TGraphic; Brightness: Integer = 0; Contrast: Integer = 0)</strong><br />Converts the graphic specified by the Graphic parameter to 256 grayscaled colors Device Independent Bitmap (DIB) and draws it in the rectangle specified by the Rect parameter on the canvas specified by the Canvas parameter. This procedure is useful for printing images on a printer canvas.</li>
+  <li><strong>function CreateWinControlImage(WinControl: TWinControl): TGraphic</strong><br />Creates a graphic object from the snapshot of the specified windowed control.</li>
+  <li><strong>procedure ConvertBitmapToGrayscale(Bitmap: TBitmap; Brightness: Integer = 0; Contrast: Integer = 0)</strong><br />Converts colors of the bitmap specified by the Bitmap parameter to 256 grayscaled colors. Optionally, you can adjust brightness and contrast of the grayscaled images with values in range -100 to 100.</li>
+  <li><strong>procedure SmoothDraw(Canvas: TCanvas; const Rect: TRect; Metafile: TMetafile)</strong><br />Draws the metafaile in the rectangle specified by the Rect parameter on the canvas specified by the Canvas parameter.</li>
+  <li><strong>function dsPDF: TdsPDF</strong><br />Returns a wrapper object for dsPDF library. This is a singleton object, do not destroy it.</li>
+  <li><strong>function gdiPlus: TGDIPlusSubset</strong><br />Returns a wrapper object for GDI+ subset. This is a singleton object, do not destroy it.</li>
+</ul>
+<h3 id="history">HISTORY</h3>
+<ul>
+  <li><strong>Version 5.90 (November 4, 2012)</strong>
+    <br />- Fixed the image positioning problem in <em>PainGraphic</em> method (Thanks to <href="http://forum.delphiarea.com/memberlist.php?mode=viewprofile&u=4033">Ilya</a>).
+		<br />- Fixed direct printing of pages with metafile content.
+		<br />- Some minor tweaks.
+  </li>
+  <li><strong>Version 5.80 (June 18, 2012)</strong>
+    <br />- Fixed the compatibility issue with Delphi XE2 on 64-bit environment.
+  </li>
+  <li><strong>Version 5.70 (June 28, 2011)</strong>
+    <br />- Fixed the GDI+ shutdown issue (Thanks to <a href="http://forum.delphiarea.com/memberlist.php?mode=viewprofile&u=3925">mckiss</a>).
+    <br />- Fixed the incorrect scrolling direction using mouse wheel (Thanks to <a href="mailto:jlbondy@datainnovations.com">Jon L. Bondy</a>).
+    <br />- For convenience, added <em>BeginAppend</em> and <em>EndAppend</em> methods for adding a new page at the end of pages.
+  </li>
+  <li><strong>Version 5.61 (November 25, 2010)</strong>
+    <br />- Fixed the GDI+ issue when it is used inside a dll (Thanks to <a href="http://www.tarifer.ru/">Dmitry</a>).
+    <br />- In some cases, resizing <em>TPrintPreview</em> control was not updating the visible area marker of the selected thumbnail.
+    <br />- Added <em>DisableTheme</em> property to <em>TThumbnailPreview</em> control. Windows Aero makes the selected thumbnail unclear. By setting this property to true, you can prevent this problem.
+  </li>
+  <li><strong>Version 5.60 (October 19, 2010)</strong>
+    <br />- Added <em>OnPageProcessing</em> event to <em>TPrintPreview</em> control (Thanks to <a href="mailto:d.k@philo.de">Dr. Dieter Köhler</a>). This event occurs just before processing a page, during the print and save as PDF and TIFF operations. You can use this event to filter pages or cancel the whole operation.
+    <br />- Changed the parameter list of <em>OnProgress</em> event. Now this event just reports the progress; neither reports processing page number nor provides a way to cancel the operation.
+    <br />- Removed some redundant code (Thanks to <a href="mailto:d.k@philo.de">Dr. Dieter Köhler</a>).
+  </li>
+  <li><strong>Version 5.50 (August 19, 2010)</strong>
+    <br />- As of now, the <em>TPrintPreview</em> control uses GDI+ for smooth drawing and multi-frame TIFF output without need of any third-party wrapper.
+    <br />- The PrintPreview output format has been changed. With the new format you can save/load pages to/from middle of a stream containing other contents. In the other hand, lack of version information was the main problem of the older format, and because of that I couldn't provide a backward compatible output.
+    <br />- Ouput compression is no more supported. Because loading and saving routines need random access to the stream and compression/decompression streams provide only sequential access, using ZLib library requires an intermediate stream. This is something that should be done in your own application if it is really needed.
+    <br />- Some minor tweaks.
+  </li>
+  <li><strong>Version 5.41 (August 13, 2010)</strong>
+    <br />- Fixed the bug appeared in the previous release, and preventing <em>TPrintPreview</em> control to be placed on a form (Thanks to <a href="mailto:lepsch@gmail.com">Guilherme Lepsch</a>).
+  </li>
+  <li><strong>Version 5.40 (August 12, 2010)</strong>
+    <br />- Added <em>PageLogicalPixels</em> property to <em>TPrintPreview</em> control. This property returns size of paper in screen coordinates and in pixels.
+    <br />- In <em>TPrintPreview</em> control, renamed <em>PagePixels</em> property to <em>PageDevicePixels</em>. This change is because of introducing the new property <em>PageLogicalPixels</em>.
+    <br />- Added <em>ScreenToPreview</em>, <em>PreviewToScreen</em>, <em>ScreenToPaper</em>, and <em>PaperToScreen</em> methods to <em>TPaperPreview</em> control.
+    <br />- Added <em>PaintWinControlEx2</em> method to <em>TPaperPreview</em> control. This method is simlar to <em>PaintGraphicEx2</em> except that it works on a windowed control.
+    <br />- Added <em>OnProgress</em> event to <em>TPrintPreview</em> control. This event occurs during printing and saving pages as PDF and multi-frame TIFF.
+    <br />- Removed <em>OnPrintProgress</em> event from <em>TPrintPreview</em> control. The <em>OnProgress</em> event covers this old event.
+    <br />- Removed <em>Aborted</em> property, <em>Abort</em> method, and <em>OnAbort</em> event from <em>TPrintPreview</em> control. You can provide an event handler for <em>OnProgress</em> event to cancel printing.
+    <br />- In <em>TPaperPreview</em> control, renamed <em>BorderSize</em> and <em>ShadowSize</em> properties to <em>BorderWidth</em> and <em>ShadowWidth</em>. By this change, these properties share the same name with their corresponding properties in <em>TPaperPreviewOptions</em> class.
+    <br />- Added <em>ClientToPaper</em> and <em>PaperToClient</em> methods to   <em>TPaperPreview</em> control.
+    <br />- Added global <em>CreateWinControlImage</em> function. This function returns a graphic object from the screen snapshot of a windowed control.
+  </li>
+  <li><strong>Version 5.30 (July 31, 2010)</strong>
+    <br />- Added support for Synopse PDF library (Thanks to <a href="http://www.pecsforall.com">Martijn van der Kooij</a>).
+    <br />- Added <em>PaperViewControl</em> property to <em>TPrintPreview</em> control.
+    <br />- Added global <em>SmoothDraw</em> function.
+    <br />- Added global <em>dsPDF</em> function. 
+    <br />- Fixed compatibility issue with Delphi 2009 and 2010 (Thanks to <a href="jd@cococo.de">Jens Doll</a>).
+    <br />- Some optimization tweaks.
+  </li>
+  <li><strong>Version 5.20 (May 8, 2010)</strong>
+    <br />- Fixed a possible memory leak (Thanks to <a href="mailto:detlef.heibing@email.de">Detlef</a>).
+    <br />- Added <em>PDFDcumentInfo</em> property to <em>TPrintPreview</em> control (Thanks to <a href="mailto:yannick@lanchec.com">Yannick</a>).
+  </li>
+  <li><strong>Version 5.16 (March 7, 2010)</strong>
+    <br />- Fixed corruption of temporary file.
+  </li>
+  <li><strong>Version 5.15 (February 6, 2010)</strong>
+    <br />- Now <em>UserDefaultUnits</em> and <em>SystemDefaultUnits</em> properties of TPrintPreview return the expected values (Thanks to <a href="mailto:jwvanooijen@yahoo.com">Johan van Ooijen</a>).
+    <br />- The compatibility issue of TThumbnailPreview on Delphi 5 and earlier resolved.
+  </li>
+  <li><strong>Version 5.14 (March 2, 2009)</strong>
+		<br />- The wired bug of TThumbnailPreview on Windows XP fixed.
+		<br />- Getting printer's paper size when paper orientation was landscape, could result in wrong paper orientation.
+		<br />- Setting paper size via form name was not considering the current paper orientation.
+		<br />- Setting paper size when control's width was one pixel had no effect. It was because of misspelling of a variable name and fixed.
+	</li>
+  <li><strong>Version 5.13 (February 23, 2009)</strong>
+		<br />- Fixed compatibility issues with Delphi 5 and earlier.
+	</li>
+  <li><strong>Version 5.12 (February 2, 2009)</strong>
+		<br />- The <em>TPageSetupDialog</em> component is not available in Delphi versions before Delphi 7, therefore the <em>SetPageSetupParameters</em> and <em>GetPageSetupParameters</em> methods of <em>TPrintPreview</em> control should not be available for those versions of Delphi too. Missing this was causing the component could not be installed on Delphi 6 and earlier.
+	</li>
+  <li><strong>Version 5.11 (January 22, 2009)</strong>
+		<br />- The bug that appeared in the last update and caused changes in the <em>Units</em> property do not update the value of <em>PaperWidth</em>/<em>PaperHeight</em> properties, is fixed.
+	</li>
+  <li><strong>Version 5.10 (January 14, 2009)</strong>
+		<br />- If the unit compiles with GDI_PLUS directive, the TPrintPreview component uses GDI+ to draw preview pages and thumbnails. As the result, pages will be displayed smoother.
+		<br />- To save pages as a multi-page TIFF image, <em>SaveAsTIF</em> and <em>CanSaveAsTIF</em> methods are added to the TPrintPreview control. The <em>SaveAsTIF</em> method works only when the unit is compiled with GDI_PLUS directive. 
+		<br />- The <em>psSavingTIF</em> is added as a new TPrintPreview control's state.
+		<br />- The <em>Zoom</em> property of TPrintPreview control can accept larger values now. Because of that the default value of <em>ZoomMax</em> property changed from 500 to 1000.
+		<br />- To know whether the preview page can be scrolled horizontally or vertically, <em>CanScrollHorz</em> and <em>CanScrollVert</em> properties are added to the TPrintPreview control.
+		<br />- As of now, current preview page can be zoomed and scrolled by dragging thumbnail's marker on TThumbnailPreview control.
+		<br />- Flickering of TThumbnailPreview control while resizing is fixed.
+	</li>
+  <li><strong>Version 5.00 (January 2, 2009)</strong>
+		<br />- Display rendering for PrintPreview, ThumbnailPreview, and PaperPreview controls are highly optimized.
+		<br />- Before this version, the PrintPreview control was keeping only one single page on memory. Now, you can set the number of cached pages using the new <em>CacheSize</em> property.
+		<br />- As of now, when there are more pages than cache size, the PrintPreview control uses only a temporary file (very optimum). Because of that <em>UseTempFile</em> property is obselete and has been removed.
+		<br />- Besides editing a page, you can now insert new or replace an existing page. Deleting and reordering of pages is also possble. The methods for these actions are <em>BeginReplace</em>, <em>EndReplace</em>, <em>BeginInsert</em>, <em>EndInsert</em>, <em>Delete</em>, <em>Exchange</em>, and <em>Move</em>.
+		<br />- To know at each time which page owns the PrentPreview canvas, the new <em>CanvasPageNo</em> property is added.
+		<br />- To make conversion of units a bit easier, <em>BoundsFrom</em>, <em>RectFrom</em>, <em>PointFrom</em>, <em>XFrom</em>, and <em>YFrom</em> methods are added.
+		<br />- Because for adding a new printer form the user must have the required priviledge on Windows, the control no more automatically add or remove forms. As the result, <em>AutoFormName</em> property and <em>OnAutoCustomForm</em> are obsolete and removed. Instead, use <em>IsDummyFormName</em> property to know the <em>FormName</em> property contains an actual form name or a temporary name.
+		<br />- Two new methods for getting/setting properties from/to PageSetupDialog, <em>GetPageSetupParameters</em> and <em>SetPageSeupParametrs</em> are added to PrintPreview control.
+		<br />- For getting system and user prefered measurement units <em>SystemDefaultUnits</em> and <em>UserDefaultUnits</em> properties are added to PrintPreview control.
+		<br />- To mark printable area of the selected printer on the preview pages, <em>ShowPrintableArea</em> and <em>PrintableAreaColor</em> properties are added to the PrintPreview control.
+		<br />- The <em>IsPaperCustom</em> and <em>IsPaperRotated</em> propertis are added to the PrintPreview control. The first one determines whether a custom paper is in use or not, and the other one tells whether the paper orientation is landscape.
+		<br />- The preview page on the PrintPreview control can have a hint string different from the control's one.
+		<br />- To be able to allow/disallow image transparency for print at runtime, a global boolean variable named <em>AllowTransparentDIB</em> is declared.
+		<br />- The <em>OnStateChange</em> event added to the PrintPreview control. This event occurs whenever <em>State</em> property changes. By the way, the control has some new states now.
+		<br />- The <em>OnPaperChange</em> event added to the PrintPreview control. This event occurs whenever paper size or orientation changes.
+		<br />- Similar to <em>OnBackground</em> and <em>OnAnnotation</em> events, two new events named <em>OnPrintBackground</em> and <em>OnPrintAnnotation</em> are added. Using this events you can draw some other stuffs under or over the hard copied pages.
+		<br />- The new method <em>PrintPagesEx</em> added to the PrintPreview control. This method allows you to print unordered and discrete list of pages.
+		<br />- To draw a preview page on any canvas, <em>DrawPage</em> method is added to the PrintPreview control.
+		<br />- The PaperPreview control can be captioned now. The properties introduced for this purpose are <em>Caption</em>, <em>ShowCaption</em>, <em>Alignment</em>, and <em>WordWrap</em>.
+		<br />- The <em>PreservePaperSize</em> property is added to the PaperPreview control. When one of paper parameters (e.g. PaperWidth, PaperHeight, ShadowSize, ...) changes, this property defines which of page or control should be resized.
+		<br />- The <em>OnMouseEnter</em> and <em>OnMouseLeave</em> events are added to TPaperPreview control.
+		<br />- The ThumbnailPreview control is rewritten from scratch. This version of control is derived from TCustomListView.
+		<br />- The <em>Margin</em> and <em>Orientation</em> peroperties of the TThumbnailPreview control are removed. Instead use <em>SpacingHorizontal</em>, <em>SpacingVertical</em>, and <em>IconOptions</em> properties.
+		<br />- You can now custom draw thumbnails on the TThumbnailPreview control. The <em>OnPageBeforeDraw</em> and <em>OnPageAfterDraw</em> events are added for these purpose.
+		<br />- Now, the thumbnails on TThumbnailPreview control can have a separate popup menu and hint (InfoTip) string.
+		<br />- The TThumbnailPreview control is improved by adding <em>OnPageClick</em>, <em>OnPageDblClick</em>, <em>OnPageInfoTip</em>, <em>OnPageSelect</em>, and <em>OnPageUnselect</em> events.
+		<br />- The thumbnails in the TThumbnailPreview control can have their Grayscale behavior independent of the attached TPrintPreview control.
+		<br />- Because the TThumbnailPreview control is actually a ListView control, you have multiselect option. For example, user can select some pages to print or delete selected pages.
+		<br />- The thumbnails in the TThumbnailPreview control can be reordered using drag and drop operations. The new <em>AllowReorder</em> property enables/disables this function.
+		<br />- The demo program (general) is updated.
+		<br />- Finally, TThumbnailPreview and TPaperPreview controls are documented.
+  </li>
+  <li><strong>Version 4.80 (December 2, 2008)</strong><br />- Fixed problem of drawing large bitmap images in grayscale (Thanks to <a href="http://forum.delphiarea.com/memberlist.php?mode=viewprofile&amp;u=1551">EPusch</a>).<br />- Added brightness and contrast adjustment in grayscale mode (Thanks to <a href="http://forum.delphiarea.com/memberlist.php?mode=viewprofile&amp;u=1451">mathgod</a> for the idea).<br />- Support for Delphi 2009 added.</li>
+  <li><strong>Version 4.77 (December 18, 2007)</strong><br />- Fixed problem of calculating size of custom papers (Thanks to <a href="http://forum.delphiarea.com/memberlist.php?mode=viewprofile&amp;u=1441">e.schmidtlein</a>).</li>
+  <li><strong>Version 4.76 (November 20, 2007)</strong><br />- Improved printing of windowed control.</li>
+  <li><strong>Version 4.75 (May 3, 2007)</strong><br />- Fixed a bug in <em>Abort</em> method (Thanks to <a href="mailto:johnhodgson@qmap.co.uk">John Hodgson</a>).</li>
+  <li><strong>Version 4.74 (April 27, 2007)</strong><br />- The page size included in saving pages as PDF (Thanks to <a href="http://forum.delphiarea.com/memberlist.php?mode=viewprofile&amp;u=1286">DwrCymru</a>).</li>
+  <li><strong>Version 4.73 (April 24, 2007)</strong><br />- The bug in saving landscape pages as PDF is fixed (Thanks to <a href="http://forum.delphiarea.com/memberlist.php?mode=viewprofile&amp;u=126">akeix</a>).</li>
+  <li><strong>Version 4.72 (April 9, 2007)</strong><br />- <em>SaveAsPDF</em> and <em>CanSaveAsPDF</em> methods are added. These new methods need dsPDF library by <a href="mailto:odisej@email.si%20">Grega Loboda</a> to function.</li>
+  <li><strong>Version 4.71 (February 5, 2007)</strong><br />- For displaying and/or printing pages in grayscale, the Grayscale property is introduced.</li>
+  <li><strong>Version 4.70 (February 1, 2007)</strong><br />- To be able to draw background for preview pages, <em>Background</em> property, <em>OnBackground</em> event, and <em>UpdateBackground</em> method are added.<br />- As of this release, FastPrint property is obsolete.<br />- Conditional support for image transparency is added.<br />- As of this release, defining custom thumbnail class for thumbnail view is allowed.</li>
+  <li><strong>Version 4.64 (February 23, 2006)</strong><br />- The inavlid parameter type of BltBitmapAsDIB function where causing range check error, is corrected (Thanks to <a href="mailto:mgd@satelier.com.br">Miguel Gastelumendi</a>).</li>
+  <li><strong>Version 4.63 (January 30, 2006)</strong><br />- The calculation of printer's printable area corrected (Thanks to Mixy).<br />- Some minor tweaks.</li>
+  <li><strong>Version 4.62 (May 12, 2005)</strong><br />- Some minor tweaks.</li>
+  <li><strong>Version 4.61 (February 21, 2005)</strong><br />- A minor bug in thumbnail viewer fixed (Thanks to <a href="mailto:marco@wobben.com">MeW</a>).</li>
+  <li><strong>Version 4.60 (July 28, 2004)</strong><br />- The Annotaton property, UpdateAnnotation method, and OnAnnotation event added to the TPrintPreview interface.<br />- The new property PrinterPageBounds added. This property determines the printable bouding rectangle of the currently selected printer.</li>
+  <li><strong>Version 4.53 (June 30, 2004)</strong><br />- The bug of setting paper orientation on Windows NT is fixed.</li>
+  <li><strong>Version 4.52 (June 25, 2004)</strong><br />- Now, when a custom page size is set in the control, the control automatically adds it to the system. Consequently, the AutoFormName property and OnAutoCustomForm event are added.<br />- A possible bug on custom page sizes on Windows 98 fixed.</li>
+  <li><strong>Version 4.50 (June 19, 2004)</strong><br />- The new property <em>FormName</em>, and the new methods <em>FetchFormNames</em>, <em>GetFormSize</em>, <em>AddNewForm</em>, and <em>RemoveForm</em> added to TPrintPreview component.<br />- Now, the <em>StretchDrawGraphicAsDIB</em> procedure doesn't convert metafiles to DIB if the metafile doesn't have a DDB record.<br />- Some minor tweaks.</li>
+  <li><strong>Version 4.40 (May 14, 2004)</strong><br />- To make editing of an existing page easier, <em>BeginEdit</em> and <em>EndEdit</em> methods added. Consequently, The new state psEditing added to the list of available control's states.</li>
+  <li><strong>Version 4.36 (May 13, 2004)</strong><br />- New <em>OnEndPage</em> event added.</li>
+  <li><strong>Version 4.35 (April 10, 2004)</strong><br />- New method <em>PaintGraphicEx2</em> added to TPrintPreview component (Thanks to <a href="mailto:roy.magne@os.ino.no">Roy M Klever</a>).<br />- The global variable <em>UseHalfTonePrinting</em> added (Thanks to <a href="mailto:roy.magne@os.ino.no">Roy M Klever</a>).</li>
+  <li><strong>Version 4.34.1 (March 24, 2004)</strong><br />- A bug is fixed (Thanks to <a href="mailto:janet.agney@vaisala.com">Janet Agney</a>).</li>
+  <li><strong>Version 4.34 (December 8, 2003)</strong><br />- Now, a preview page can be changed just by assigning a metafile to it.</li>
+  <li><strong>Version 4.33 (December 6, 2003)</strong><br />- Now, the preview pages can be saved as compressed using the <a href="#zlib">ZLib</a> library. As default this feature is disabled.<br />- Two new methods ClientToPaper and PaperToClient are added to TPrintPreview component.<br />- Now, the preview scrolls faster and smoother.<br />- Some minore tweaks.</li>
+  <li><strong>Version 4.32 (November 20, 2003)</strong><br />- Incorrect printing of the content when the measurement unit was mmPixel, is fixed (Thanks to <a href="mailto:briadorin@yahoo.com">Bria Dorin</a>).</li>
+  <li><strong>Version 4.31 (November 2, 2003)</strong><br />- The ConvertUnit, ToPrinterUnit, and Screen2PrinterUnit methods are no longer exist in this release. Instead of the mentioned methods use the new <em>ConvertPoints</em>, <em>ConvertXY</em>, <em>ConvertX</em> and <em>ConvertY</em> methods.<br />- For convenience the <em>PageBounds</em>, <em>PageSize</em>, and <em>PagePixels</em> peroperies added.<br />- The new property <em>DirectPrint</em> added. To print pages directly on the printer without generating the preview pages, set this property to True.<br />- And, some minor tweaks in rendering rich text and drawing preview pages.</li>
+  <li><strong>Version 4.30 (October 19, 2003)</strong><br />- The bug in printing pages on a printer with different horizontal and vertical resolution fixed.<br />- The bug in font size fixed.<br />- The points unit added to measurement units.<br />- The new component TThumbnailPreview added to the suite. This control shows the thumbnails of TPrintPreview pages.</li>
+  <li><strong>Version 4.21 (September 18, 2003)</strong><br />- The paper size and paper orientation were missed in the saved preview files, which are added in this release. The old preview files are still readable by the control.<br />- Now, the component can be compiled on C++Builder 3 (Thanks to <a href="mailto:pzelotti@libero.it">Patrizio Zelotti</a>).</li>
+  <li><strong>Version 4.20 (July 27, 2003)</strong><br />- The new properties <em>ZoomMin, ZoomMax, </em>and <em>ZoomStep</em> added.<br />- The new event <em>OnZoomChange</em> added.<br />- The mouse wheel support added.</li>
+  <li><strong>Version 4.19 (July 8, 2003)</strong><br />- The mistake in interpreting mmLoEnglish and mmHiEnglish units fixed.</li>
+  <li><strong>Version 4.18 (July 6, 2003)</strong><br />- The bug on zooming the pages fixed (Thanks to <a href="mailto:johnnybit@poczta.onet.pl">Hubert &quot;Johnny_Bit&quot; Kowalski</a>).<br />- Now changing the <em>ZoomState</em> property will update the value of the <em>Zoom</em> property.</li>
+  <li><strong>Version 4.17 (May 29, 2003)</strong><br />- The new method GetRighTextRect added (Thanks to <a href="mailto:delphiarea@spamex.com">rgesswein</a>).<br />- The PaintRichText method modified to support custom RichEdit controls (Thanks to <a href="mailto:sebastien.gravier@free.fr">Sebastien</a>).</li>
+  <li><strong>Version 4.16 (May 18, 2003)</strong><br />- The component modified to use the resolution of the currently selected printer for more accurate print result.</li>
+  <li><strong>Version 4.15 (May 3, 2003)</strong><br />- Bug in printing windowed controls fixed.<br />- The <em>UsePrinterOptions</em> property added.<br />- The <em>SetPrinterOptions</em> and <em>GetPrinterOptions</em> methods added.</li>
+  <li><strong>Version 4.14 (April 23, 2003)</strong><br />- Bug in setting the printer's paper orientation to landscape fixed.</li>
+  <li><strong>Version 4.13 (April 16, 2003)</strong><br />- Components' icons changed (Thanks to <a href="mailto:b06pxv@fds.com">Paul Van Gundy</a>).<br />- Now, two different cursor states for scrolling the page by dragging (Thanks to <a href="mailto:b06pxv@fds.com">Paul Van Gundy</a>).</li>
+  <li><strong>Version 4.12 (April 8, 2003)</strong><br />- Bug in printing pages with custom paper size fixed.</li>
+  <li><strong>Version 4.11 (March 31, 2003)</strong><br />- Bug in rendering images on Windows 2000 and XP fixed (Thanks to <a href="mailto:roy.magne@os.ino.no">Roy M Klever</a>)</li>
+  <li><strong>Version 4.10 (March 29, 2003)</strong><br />- <em>PaintGraphicEx</em>, <em>PaintWinControlEx</em>, and <em>PaintRichText</em> methos added.</li>
+  <li><strong>Version 4.01 (May 11, 2002)</strong><br />- A little optimization in <em>SaveToStream</em> and <em>LoadFromStream</em> methods.</li>
+  <li><strong>Version 4.00 (January 19, 2002)</strong><br />- The control does not support 16bit platform anymore.<br />- Peformance and stability of the control on both display and print parts has been improved.<br />- <em>SaveToStream</em> and <em>LoadFromStream</em> method added.<br />- Memory leak bug fixed.<br />- Definition of <em>PaintGraphic</em> and <em>PaintWinControl</em> methods changed.<br />- Because of the applied improvements, the following properties are obsolete: <em>MarginLeft</em>, <em>MarginTop</em>, <em>MarginRight</em>, <em>MarginBottom</em>, <em>PageRect</em>, <em>PageWidth</em>, <em>PageHeight</em>, and <em>ZoomOrigion</em>.</li>
+  <li><strong>Version 3.20 (January 13, 2002)</strong><br />- To improve the control functionality and speed, some internal procedures changed.<br />- A value larger than 0.7mm limit for margin properties removed.</li>
+  <li><strong>Version 3.10 (January 6, 2002)</strong><br />- New property <em>ZeroOrigion added</em>.</li>
+  <li><strong>Version 3.01 (April 26, 2001)</strong><br />- <em>ZoomSavePos</em> property added to 32bit version of the component (Thanks to <a href="mailto:delphi@kopr.cz">Pavel Zidek</a>).</li>
+  <li><strong>Older Versions(Unknown Date)</strong><br />- Unfortunately, I have missed tracks of the older versions.</li>
+</ul>
+<h3 id="acknowledgment">ACKNOWLEDGMENT</h3>
+  <p>Special thanks to:</p>
+  <ul class="multicolumn">
+    <li><a href="mailto:laser@nuovacs.it">Rinaldo Andrea</a></li>
+    <li><a href="mailto:jefo@post2.tele.dk">Jens Christian Fogtmann</a></li>
+    <li><a href="mailto:tarnawsky@ali.com.au">Damian Tarnawsky</a></li>
+    <li><a href="mailto:w2m@netheaven.com">Bill Miller</a></li>
+    <li><a href="mailto:peter@peterandlinda.com">Peter Hedlund</a></li>
+    <li><a href="mailto:delphi@kopr.cz">Pavel Zidek</a></li>
+    <li><a href="mailto:roy.magne@os.ino.no">Roy M Klever</a></li>
+    <li><a href="mailto:b06pxv@fds.com">Paul Van Gundy</a></li>
+    <li><a href="mailto:johnnybit@poczta.onet.pl">Hubert &quot;Johnny_Bit&quot; Kowalski</a></li>
+    <li><a href="mailto:rawos@rawos.com">Tomas Koutny</a></li>
+    <li><a href="mailto:pzelotti@libero.it">Patrizio Zelotti</a></li>
+    <li><a href="mailto:briadorin@yahoo.com">Bria Dorin</a></li>
+    <li><a href="mailto:atsoft@atsoftware.czweb.org">Arpad Toth</a></li>
+    <li><a href="mailto:janet.agney@vaisala.com">Janet Agney</a></li>
+    <li><a href="mailto:marco@wobben.com">MeW</a></li>
+    <li>Mixy</li>
+    <li><a href="mailto:mgd@satelier.com.br">Miguel Gastelumendi</a></li>
+    <li>akeix</li>
+    <li>DwrCymru</li>
+    <li><a href="mailto:johnhodgson@qmap.co.uk">John Hodgson</a></li>
+    <li>e.schmidtlein</li>
+    <li>EPusch</li>
+    <li>mathgod</li>
+    <li><a href="mailto:detlef.heibing@email.de">Detlef Heibing</a></li>
+    <li><a href="mailto:yannick@lanchec.com">Yannick LANCHEC</a></li>
+    <li><a href="http://www.pecsforall.com">Martijn van der Kooij</a></li>
+    <li><a href="mailto:lepsch@gmail.com">Guilherme Lepsch</a></li>
+    <li><a href="mailto:d.k@philo.de">Dr. Dieter Köhler</a></li>
+    <li><a href="http://www.tarifer.ru/">Dmitry</a></li>
+    <li><a href="http://forum.delphiarea.com/memberlist.php?mode=viewprofile&u=3925">mckiss</a></li>
+    <li><a href="mailto:jlbondy@datainnovations.com">Jon L. Bondy</a></li>    
+    <li><a href="mailto:dvmuratov@yandex.ru">Dmitry Muratov</a></li>    
+  </ul>
+<h3 id="license">LICENSE</h3>
+  <p>The Print Preview components (TPrintPreview, TThumbnailPreview, and TPaperPreview) are freeware. You may copy components' files AS LONG AS YOU COPY ALL OF THEM. If you want to change the source code in order to improve the components' features, performance, etc. please send me the new source code so that I can have a look at it. The changed source code should contain descriptions what you have changed, and of course your name. The only thing you MAY NOT CHANGE is the ORIGINAL COPYRIGHT INFORMATION.</p>
+<h3 id="disclaimer">DISCLAIMER</h3>
+  <p>The Print Preview components (TPrintPreview, TThumbnailPreview, and TPaperPreview) are provided &quot;AS IS&quot; without any warranty of any kind, either express or implied. The entire risk as to the quality and performance of the software is with you. The author is NOT liable for any DAMAGES resulting from the use and misuse of the components, especially he is NOT liable for DAMAGES that were caused BY ANY VERSION WHICH HAS NOT BEEN PROGRAMMED BY THE AUTHOR HIMSELF.</p>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="100%"><hr noshade="noshade" /></td>
+    <td nowrap="nowrap">&nbsp;<sup style="font-size: 6pt;">END OF DOCUMENT</sup></td>
+  </tr>
+</table>
+</body>
+</html>
