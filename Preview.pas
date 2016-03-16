@@ -6,13 +6,11 @@
 {  kambiz@delphiarea.com                                                       }
 {  http://www.delphiarea.com                                                   }
 {                                                                              }
-{  TPrintPreview v5.90                                                         }
+{  TPrintPreview v5.91                                                         }
 {  TPaperPreview v2.20                                                         }
 {  TThumbnailPreview v2.11                                                     }
 {                                                                              }
 {------------------------------------------------------------------------------}
-
-{$I DELPHIAREA.INC}
 
 {------------------------------------------------------------------------------}
 {  Use Synopse library to output preview as PDF document                       }
@@ -54,6 +52,7 @@ type
   TTemporaryFileStream = class(THandleStream)
   public
     constructor Create;
+    destructor Destroy; override;
   end;
 
   { TIntegerList }
@@ -88,22 +87,22 @@ type
     FOwner: TMetafileList;
     FMetafile: TMetafile;
     FStates: TMetafileEntryStates;
-    FOffset: {$IFDEF COMPILER4_UP} Int64 {$ELSE} DWORD {$ENDIF};
-    FSize: {$IFDEF COMPILER4_UP} Int64 {$ELSE} DWORD {$ENDIF};
+    FOffset: Int64;
+    FSize: Int64;
     TouchCount: Integer;
     procedure MetafileChanged(Sender: TObject);
   protected
     constructor CreateInMemory(AOwner: TMetafileList; AMetafile: TMetafile);
     constructor CreateInStorage(AOwner: TMetafileList;
-      const AOffset, ASize: {$IFDEF COMPILER4_UP} Int64 {$ELSE} DWORD {$ENDIF});
+      const AOffset, ASize: Int64);
     procedure CopyToMemory;
     procedure CopyToStorage;
     function IsMoreRequiredThan(Another: TMetafileEntry): Boolean;
     procedure Touch;
     property Owner: TMetafileList read FOwner;
     property States: TMetafileEntryStates read FStates;
-    property Offset: {$IFDEF COMPILER4_UP} Int64 {$ELSE} DWORD {$ENDIF} read FOffset;
-    property Size: {$IFDEF COMPILER4_UP} Int64 {$ELSE} DWORD {$ENDIF} read FSize;
+    property Offset: Int64 read FOffset;
+    property Size: Int64 read FSize;
   public
     constructor Create(AOwner: TMetafileList);
     destructor Destroy; override;
@@ -257,9 +256,7 @@ type
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     procedure CMTextChanged(var Message: TMessage); message CM_TEXTCHANGED;
-    {$IFDEF COMPILER4_UP}
     procedure BiDiModeChanged(var Message: TMessage); message CM_BIDIMODECHANGED;
-    {$ENDIF}
   protected
     procedure Paint; override;
     procedure DrawPage(Canvas: TCanvas); virtual;
@@ -281,9 +278,7 @@ type
   published
     property Align;
     property Alignment: TAlignment read FAlignment write SetAlignment default taCenter;
-    {$IFDEF COMPILER4_UP}
     property BiDiMode;
-    {$ENDIF}
     property BorderColor: TColor read FBorderColor write SetBorderColor default clBlack;
     property BorderWidth: TBorderWidth read FBorderWidth write SetBorderWidth default 1;
     property Caption;
@@ -292,9 +287,7 @@ type
     property DragCursor;
     property DragMode;
     property Font;
-    {$IFDEF COMPILER4_UP}
     property ParentBiDiMode;
-    {$ENDIF}
     property ParentColor;
     property ParentFont;
     property ParentShowHint;
@@ -553,21 +546,21 @@ type
     function PaintWinControlEx2(const Rect: TRect; WinControl: TWinControl;
       VertAlign: TVertAlign; HorzAlign: THorzAlign): TRect;
     function PaintRichText(const Rect: TRect; RichEdit: TCustomRichEdit;
-      MaxPages: Integer; pOffset: PInteger {$IFDEF COMPILER4_UP} = nil {$ENDIF}): Integer;
+      MaxPages: Integer; pOffset: PInteger = nil): Integer;
     function GetRichTextRect(var Rect: TRect; RichEdit: TCustomRichEdit;
-      pOffset: PInteger {$IFDEF COMPILER4_UP} = nil {$ENDIF}): Integer;
+      pOffset: PInteger = nil): Integer;
     procedure Clear;
     function Delete(PageNo: Integer): Boolean;
     function Move(PageNo, NewPageNo: Integer): Boolean;
     function Exchange(PageNo1, PageNo2: Integer): Boolean;
     function BeginReplace(PageNo: Integer): Boolean;
-    procedure EndReplace(Cancel: Boolean {$IFDEF COMPILER4_UP} = False {$ENDIF});
+    procedure EndReplace(Cancel: Boolean = False);
     function BeginEdit(PageNo: Integer): Boolean;
-    procedure EndEdit(Cancel: Boolean {$IFDEF COMPILER4_UP} = False {$ENDIF});
+    procedure EndEdit(Cancel: Boolean = False);
     function BeginInsert(PageNo: Integer): Boolean;
-    procedure EndInsert(Cancel: Boolean {$IFDEF COMPILER4_UP} = False {$ENDIF});
+    procedure EndInsert(Cancel: Boolean = False);
     function BeginAppend: Boolean;
-    procedure EndAppend(Cancel: Boolean {$IFDEF COMPILER4_UP} = False {$ENDIF});
+    procedure EndAppend(Cancel: Boolean = False);
     procedure BeginDoc;
     procedure EndDoc;
     procedure NewPage;
@@ -579,10 +572,8 @@ type
     procedure UpdateBackground;
     procedure SetPrinterOptions;
     procedure GetPrinterOptions;
-    {$IFDEF COMPILER7_UP}
     procedure SetPageSetupParameters(PageSetupDialog: TPageSetupDialog);
     function GetPageSetupParameters(PageSetupDialog: TPageSetupDialog): TRect;
-    {$ENDIF}
     function FetchFormNames(FormNames: TStrings): Boolean;
     function GetFormSize(const AFormName: String; out FormWidth, FormHeight: Integer): Boolean;
     function AddNewForm(const AFormName: String; FormWidth, FormHeight: DWORD): Boolean;
@@ -676,8 +667,7 @@ type
     function GetDragImages: TDragImageList; override;
     function GetDragCursor(Accepted: Boolean; X, Y: Integer): TCursor; override;
   public
-    constructor Create(AControl: TThumbnailPreview; APageNo: Integer);
-      {$IFDEF COMPILER4_UP} reintroduce; {$ENDIF}
+    constructor Create(AControl: TThumbnailPreview; APageNo: Integer); reintroduce;
     destructor Destroy; override;
     procedure HideDragImage; override;
     procedure ShowDragImage; override;
@@ -742,18 +732,11 @@ type
     procedure SetCurrentIndex(Index: Integer);
     function GetSelected: Integer;
     procedure SetSelected(Value: Integer);
-    {$IFNDEF COMPILER6_UP}
-    function GetItemIndex: Integer;
-    procedure SetItemIndex(Value: Integer);
-    {$ENDIF}
     procedure SetDisableTheme(Value: Boolean);
     procedure CMHintShow(var Message: TCMHintShow); message CM_HINTSHOW;
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     procedure WMSetCursor(var Message: TWMSetCursor); message WM_SETCURSOR;
     procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
-    {$IFNDEF COMPILER6_UP}
-    procedure CNNotify(var Message: TWMNotify); message CN_NOTIFY;
-    {$ENDIF}
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure CreateWnd; override;
@@ -768,10 +751,7 @@ type
     function GetPopupMenu: TPopupMenu; override;
     function OwnerDataFetch(Item: TListItem; Request: TItemRequest): Boolean; override;
     function OwnerDataHint(StartIndex, EndIndex: Integer): Boolean; override;
-    {$IFDEF COMPILER6_UP}
-    function IsCustomDrawn(Target: TCustomDrawTarget;
-      Stage: TCustomDrawStage): Boolean; override;
-    {$ENDIF}
+    function IsCustomDrawn(Target: TCustomDrawTarget; Stage: TCustomDrawStage): Boolean; override;
     function CustomDrawItem(Item: TListItem; State: TCustomDrawState;
       Stage: TCustomDrawStage): Boolean; override;
     procedure Change(Item: TListItem; Change: Integer); override;
@@ -795,17 +775,11 @@ type
     function PageAt(X, Y: Integer): Integer;
     procedure GetSelectedPages(Pages: TIntegerList);
     procedure SetSelectedPages(Pages: TIntegerList);
-    {$IFNDEF COMPILER6_UP}
-    procedure ClearSelection;
-    {$ENDIF}
-    procedure DeleteSelected; {$IFDEF COMPILER6_UP} override; {$ENDIF}
+    procedure DeleteSelected; override;
     procedure PrintSelected; virtual;
     property IsGrayscaled: Boolean read FIsGrayscaled;
     property Selected: Integer read GetSelected write SetSelected;
     property DropTarget: Integer read FDropTarget;
-    {$IFNDEF COMPILER6_UP}
-    property ItemIndex: Integer read GetItemIndex write SetItemIndex;
-    {$ENDIF}
   published
     property Align default alLeft;
     property AllowReorder: Boolean read FAllowReorder write FAllowReorder default False;
@@ -832,9 +806,7 @@ type
     property HideSelection;
     property HotTrack;
     property HotTrackStyles;
-    {$IFDEF COMPILER5_UP}
     property HoverTime;
-    {$ENDIF}
     property IconOptions;
     property MarkerColor: TColor read FMarkerColor write SetMarkerColor default clBlue;
     property MultiSelect;
@@ -1061,17 +1033,14 @@ procedure DrawGraphic(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic);
 procedure StretchDrawGraphic(Canvas: TCanvas; const Rect: TRect; Graphic: TGraphic);
 
 procedure DrawGrayscale(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic;
-  Brightness: Integer {$IFDEF COMPILER4_UP} = 0 {$ENDIF};
-  Contrast: Integer {$IFDEF COMPILER4_UP} = 0 {$ENDIF});
+  Brightness: Integer = 0; Contrast: Integer = 0);
 procedure StretchDrawGrayscale(Canvas: TCanvas; const Rect: TRect; Graphic: TGraphic;
-  Brightness: Integer {$IFDEF COMPILER4_UP} = 0 {$ENDIF};
-  Contrast: Integer {$IFDEF COMPILER4_UP} = 0 {$ENDIF});
+  Brightness: Integer = 0; Contrast: Integer = 0);
 
 function CreateWinControlImage(WinControl: TWinControl): TGraphic;
 
 procedure ConvertBitmapToGrayscale(Bitmap: TBitmap;
-  Brightness: Integer {$IFDEF COMPILER4_UP} = 0 {$ENDIF};
-  Contrast: Integer {$IFDEF COMPILER4_UP} = 0 {$ENDIF});
+  Brightness: Integer = 0; Contrast: Integer = 0);
 
 procedure SmoothDraw(Canvas: TCanvas; const Rect: TRect; Metafile: TMetafile);
 
@@ -1089,11 +1058,7 @@ uses
   Vcl.ImgList,
   WinApi.RichEdit, WinApi.CommCtrl, System.Math;
 
-{$IFDEF COMPILER7_UP}
 resourcestring
-{$ELSE}
-const
-{$ENDIF}
   SOutOfMemoryError = 'There is not enough memory to create a new page';
   SLoadError        = 'The content cannot be loaded';
   SdsPDFError       = 'The dsPDF library is not available';
@@ -1413,6 +1378,12 @@ begin
     FILE_FLAG_DELETE_ON_CLOSE, 0));
 end;
 
+destructor TTemporaryFileStream.Destroy;
+begin
+  FileClose(Handle);
+  inherited Destroy;
+end;
+
 { TIntegerList }
 
 function TIntegerList.GetItems(Index: Integer): Integer;
@@ -1441,22 +1412,8 @@ begin
 end;
 
 function TIntegerList.Extract(Value: Integer): Integer;
-{$IFNDEF COMPILER5_UP}
-var
-  I: Integer;
-{$ENDIF}
 begin
-  {$IFDEF COMPILER5_UP}
   Result := Integer(inherited Extract(Pointer(Value)));
-  {$ELSE}
-  Result := 0;
-  I := IndexOf(Value);
-  if I >= 0 then
-  begin
-    Result := Items[I];
-    Delete(I);
-  end;
-  {$ENDIF}
 end;
 
 function TIntegerList.IndexOf(Value: Integer): Integer;
@@ -1532,7 +1489,7 @@ begin
 end;
 
 constructor TMetafileEntry.CreateInStorage(AOwner: TMetafileList;
-  const AOffset, ASize: {$IFDEF COMPILER4_UP} Int64 {$ELSE} DWORD {$ENDIF});
+  const AOffset, ASize: Int64);
 begin
   FOwner := AOwner;
   FOffset := AOffset;
@@ -1561,7 +1518,7 @@ procedure TMetafileEntry.CopyToMemory;
 begin
   if (msInStorage in FStates) and not (msInMemory in FStates) then
   begin
-    FOwner.Storage.Seek(FOffset, soFromBeginning);
+    FOwner.Storage.Seek(FOffset, soBeginning);
     FMetafile := TMetafile.Create;
     FMetafile.LoadFromStream(FOwner.Storage);
     FMetafile.OnChange := MetafileChanged;
@@ -1576,7 +1533,7 @@ begin
   begin
     if (msInStorage in FStates) and (FOffset + FSize = FOwner.Storage.Size) then
     begin
-      FOwner.Storage.Seek(FOffset, soFromBeginning);
+      FOwner.Storage.Seek(FOffset, soBeginning);
       FMetafile.SaveToStream(FOwner.Storage);
       FSize := FOwner.Storage.Position - FOffset;
       if msInStorage in FStates then
@@ -1584,7 +1541,7 @@ begin
     end
     else
     begin
-      FOffset := FOwner.Storage.Seek(0, soFromEnd);
+      FOffset := FOwner.Storage.Seek(0, soEnd);
       FMetafile.SaveToStream(FOwner.Storage);
       FSize := FOwner.Storage.Position - FOffset;
     end;
@@ -1811,7 +1768,7 @@ var
   Header: TStreamHeader;
   Offsets: TIntegerList;
   Entry: TMetafileEntry;
-  Size, Offset: {$IFDEF COMPILER4_UP} Int64 {$ELSE} DWORD {$ENDIF};
+  Size, Offset: Int64;
   DataSize: DWORD;
   I: Integer;
 begin
@@ -1863,8 +1820,8 @@ procedure TMetafileList.SaveToStream(Stream: TStream);
 var
   Offsets: TIntegerList;
   Entry: TMetafileEntry;
-  HeaderOffset: {$IFDEF COMPILER4_UP} Int64 {$ELSE} DWORD {$ENDIF};
-  BaseOffset: {$IFDEF COMPILER4_UP} Int64 {$ELSE} DWORD {$ENDIF};
+  HeaderOffset: Int64;
+  BaseOffset: Int64;
   DataSize: DWORD;
   I: Integer;
 begin
@@ -1882,17 +1839,17 @@ begin
       Entry := TMetafileEntry(FEntries[I]);
       if (msInStorage in Entry.States) and not (msDirty in Entry.States) then
       begin
-        FStorage.Seek(Entry.Offset, soFromBeginning);
+        FStorage.Seek(Entry.Offset, soBeginning);
         Stream.CopyFrom(FStorage, Entry.Size);
       end
       else
         Entry.Metafile.SaveToStream(Stream);
     end;
     DataSize := DWORD(Stream.Position - BaseOffset);
-    Stream.Seek(HeaderOffset, soFromBeginning);
+    Stream.Seek(HeaderOffset, soBeginning);
     Stream.WriteBuffer(DataSize, SizeOf(DataSize));
     Offsets.SaveToStream(Stream);
-    Stream.Seek(DataSize, soFromCurrent);
+    Stream.Seek(DataSize, soCurrent);
   finally
     Offsets.Free;
   end;
@@ -2249,9 +2206,7 @@ begin
       InflateRect(Rect, 0, -1);
       Flags := TextAlignFlags[Alignment] or TextWordWrapFlags[WordWrap]
             or DT_NOPREFIX;
-      {$IFDEF COMPILER4_UP}
       Flags := DrawTextBiDiModeFlags(Flags);
-      {$ENDIF}
       DrawText(Canvas.Handle, PChar(Caption), Length(Caption), Rect, Flags);
     end;
   end;
@@ -2302,9 +2257,7 @@ begin
   begin
     Flags := TextAlignFlags[Alignment] or TextWordWrapFlags[WordWrap]
           or DT_NOPREFIX or DT_CALCRECT;
-    {$IFDEF COMPILER4_UP}
     Flags := DrawTextBiDiModeFlags(Flags);
-    {$ENDIF}
     Rect.Left := 0;
     Rect.Right := Width - ShadowWidth;
     Rect.Top := 0;
@@ -2550,7 +2503,6 @@ begin
   end;
 end;
 
-{$IFDEF COMPILER4_UP}
 procedure TPaperPreview.BiDiModeChanged(var Message: TMessage);
 begin
   inherited;
@@ -2559,7 +2511,6 @@ begin
   else
     Invalidate;
 end;
-{$ENDIF}
 
 { TPDFDocumentInfo }
 
@@ -3356,7 +3307,6 @@ begin
     Result := mmHiEnglish;
 end;
 
-{$IFDEF COMPILER7_UP}
 procedure TPrintPreview.SetPageSetupParameters(PageSetupDialog: TPageSetupDialog);
 var
   OutUnit: TUnits;
@@ -3379,9 +3329,7 @@ begin
     PageSetupDialog.PageHeight := ConvertY(PaperWidth, FUnits, OutUnit);
   end
 end;
-{$ENDIF}
 
-{$IFDEF COMPILER7_UP}
 function TPrintPreview.GetPageSetupParameters(PageSetupDialog: TPageSetupDialog): TRect;
 var
   InUnit: TUnits;
@@ -3402,7 +3350,6 @@ begin
   Dec(Result.Right, ConvertX(PageSetupDialog.MarginRight, InUnit, FUnits));
   Dec(Result.Bottom, ConvertX(PageSetupDialog.MarginBottom, InUnit, FUnits));
 end;
-{$ENDIF}
 
 procedure TPrintPreview.SetPrinterOptions;
 var
@@ -3999,17 +3946,9 @@ begin
 
   if AutoScroll then
   begin
-    {$IFNDEF COMPILER4_UP}
-    if HorzScrollBar.Visible and (GetWindowLong(WindowHandle, GWL_STYLE) and SB_HORZ <> 0) then
-    {$ELSE}
     if HorzScrollBar.IsScrollBarVisible then
-    {$ENDIF}
       Inc(Space.Y, GetSystemMetrics(SM_CYHSCROLL));
-    {$IFNDEF COMPILER4_UP}
-    if VertScrollBar.Visible and (GetWindowLong(WindowHandle, GWL_STYLE) and SB_VERT <> 0) then
-    {$ELSE}
     if VertScrollBar.IsScrollBarVisible then
-    {$ENDIF}
       Inc(Space.X, GetSystemMetrics(SM_CXVSCROLL));
   end;
 
@@ -5345,9 +5284,7 @@ begin
   begin
     if FThumbnailViews.Remove(ThumbnailView) >= 0 then
     begin
-      {$IFDEF COMPILER5_UP}
       RemoveFreeNotification(ThumbnailView);
-      {$ENDIF}
       if FThumbnailViews.Count = 0 then
       begin
         FThumbnailViews.Free;
@@ -5687,15 +5624,6 @@ begin
   Message.Result := 1;
 end;
 
-{$IFNDEF COMPILER6_UP}
-procedure TThumbnailPreview.CNNotify(var Message: TWMNotify);
-begin
-  inherited;
-  if Message.NMHdr^.code = NM_CUSTOMDRAW then
-    Message.Result := Message.Result or CDRF_NOTIFYITEMDRAW;
-end;
-{$ENDIF}
-
 procedure TThumbnailPreview.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -5877,13 +5805,11 @@ begin
   Result := True;
 end;
 
-{$IFDEF COMPILER6_UP}
 function TThumbnailPreview.IsCustomDrawn(Target: TCustomDrawTarget;
   Stage: TCustomDrawStage): Boolean;
 begin
   Result := (Target = dtItem);
 end;
-{$ENDIF}
 
 function TThumbnailPreview.CustomDrawItem(Item: TListItem;
   State: TCustomDrawState; Stage: TCustomDrawStage): Boolean;
@@ -5975,25 +5901,6 @@ procedure TThumbnailPreview.SetSelected(Value: Integer);
 begin
   ItemIndex := Value - 1;
 end;
-
-{$IFNDEF COMPILER6_UP}
-function TThumbnailPreview.GetItemIndex: Integer;
-begin
-  Result := -1;
-  if inherited Selected <> nil then
-    Result := inherited Selected.Index;
-end;
-{$ENDIF}
-
-{$IFNDEF COMPILER6_UP}
-procedure TThumbnailPreview.SetItemIndex(Value: Integer);
-begin
-  if Value >= 0 then
-    Items[Value].Selected := True
-  else if inherited Selected <> nil then
-    inherited Selected.Selected := False;
-end;
-{$ENDIF}
 
 procedure TThumbnailPreview.SetDisableTheme(Value: Boolean);
 begin
@@ -6349,16 +6256,6 @@ begin
     Result := PageAt(X, Y);
 end;
 
-{$IFNDEF COMPILER6_UP}
-procedure TThumbnailPreview.ClearSelection;
-var
-  I: Integer;
-begin
-  for I := 0 to Items.Count - 1 do
-    Items[I].Selected := False;
-end;
-{$ENDIF}
-
 procedure TThumbnailPreview.GetSelectedPages(Pages: TIntegerList);
 var
   I: Integer;
@@ -6395,12 +6292,10 @@ begin
       Pages.Free;
     end;
   end
-  {$IFDEF COMPILER6_UP}
   else
   begin
     inherited DeleteSelected;
   end;
-  {$ENDIF}
 end;
 
 procedure TThumbnailPreview.PrintSelected;
@@ -6702,7 +6597,6 @@ const
 var
   DC: HDC;
   gResX, gResY: Single;
-  iResX, iResY: Single;
   xScale, yScale: Single;
   Graphics, Image: Pointer;
   ImageWidth, ImageHeight: UINT;
@@ -6808,11 +6702,7 @@ begin
       if Failed(GdipSaveImageToFile(MF^.Image, PWideChar(FileName),
          EncoderClsid, @(MF^.EncoderParameters))) then
       begin
-        {$IFDEF COMPILER7_UP}
         RaiseLastOSError;
-        {$ELSE}
-        RaiseLastWin32Error;
-        {$ENDIF}
       end;
       MF^.EncoderValue := EncoderValueFrameDimensionPage;
       Result := MF;

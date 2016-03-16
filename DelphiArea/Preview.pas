@@ -6,7 +6,7 @@
 {  kambiz@delphiarea.com                                                       }
 {  http://www.delphiarea.com                                                   }
 {                                                                              }
-{  TPrintPreview v5.90                                                         }
+{  TPrintPreview v5.91                                                         }
 {  TPaperPreview v2.20                                                         }
 {  TThumbnailPreview v2.11                                                     }
 {                                                                              }
@@ -52,6 +52,7 @@ type
   TTemporaryFileStream = class(THandleStream)
   public
     constructor Create;
+    destructor Destroy; override;
   end;
 
   { TIntegerList }
@@ -1411,6 +1412,12 @@ begin
     FILE_FLAG_DELETE_ON_CLOSE, 0));
 end;
 
+destructor TTemporaryFileStream.Destroy;
+begin
+  FileClose(Handle);
+  inherited Destroy;
+end;
+
 { TIntegerList }
 
 function TIntegerList.GetItems(Index: Integer): Integer;
@@ -1559,7 +1566,7 @@ procedure TMetafileEntry.CopyToMemory;
 begin
   if (msInStorage in FStates) and not (msInMemory in FStates) then
   begin
-    FOwner.Storage.Seek(FOffset, soFromBeginning);
+    FOwner.Storage.Seek(FOffset, soBeginning);
     FMetafile := TMetafile.Create;
     FMetafile.LoadFromStream(FOwner.Storage);
     FMetafile.OnChange := MetafileChanged;
@@ -1574,7 +1581,7 @@ begin
   begin
     if (msInStorage in FStates) and (FOffset + FSize = FOwner.Storage.Size) then
     begin
-      FOwner.Storage.Seek(FOffset, soFromBeginning);
+      FOwner.Storage.Seek(FOffset, soBeginning);
       FMetafile.SaveToStream(FOwner.Storage);
       FSize := FOwner.Storage.Position - FOffset;
       if msInStorage in FStates then
@@ -1582,7 +1589,7 @@ begin
     end
     else
     begin
-      FOffset := FOwner.Storage.Seek(0, soFromEnd);
+      FOffset := FOwner.Storage.Seek(0, soEnd);
       FMetafile.SaveToStream(FOwner.Storage);
       FSize := FOwner.Storage.Position - FOffset;
     end;
@@ -1880,17 +1887,17 @@ begin
       Entry := TMetafileEntry(FEntries[I]);
       if (msInStorage in Entry.States) and not (msDirty in Entry.States) then
       begin
-        FStorage.Seek(Entry.Offset, soFromBeginning);
+        FStorage.Seek(Entry.Offset, soBeginning);
         Stream.CopyFrom(FStorage, Entry.Size);
       end
       else
         Entry.Metafile.SaveToStream(Stream);
     end;
     DataSize := DWORD(Stream.Position - BaseOffset);
-    Stream.Seek(HeaderOffset, soFromBeginning);
+    Stream.Seek(HeaderOffset, soBeginning);
     Stream.WriteBuffer(DataSize, SizeOf(DataSize));
     Offsets.SaveToStream(Stream);
-    Stream.Seek(DataSize, soFromCurrent);
+    Stream.Seek(DataSize, soCurrent);
   finally
     Offsets.Free;
   end;
@@ -6700,7 +6707,6 @@ const
 var
   DC: HDC;
   gResX, gResY: Single;
-  iResX, iResY: Single;
   xScale, yScale: Single;
   Graphics, Image: Pointer;
   ImageWidth, ImageHeight: UINT;

@@ -1,6 +1,6 @@
 # TPrintPreview-for-Delphi
 
-Print Preview Components 5.90
+Print Preview Components 5.91
 
 Import from http://www.delphiarea.com/products/delphi-components/preview/  
 Copyright Kambiz R. Khojasteh
