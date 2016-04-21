@@ -2,7 +2,7 @@ program RichPrint;
 
 uses
   Vcl.Forms,
-  Main in 'Main.pas' {MainForm},
+  MainRichPrint in 'MainRichPrint.pas' {MainForm},
   Preview in '..\..\Preview.pas';
 
 {$R *.RES}

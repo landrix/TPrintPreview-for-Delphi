@@ -1,4 +1,4 @@
-unit Main;
+unit MainRichPrint;
 
 interface
 

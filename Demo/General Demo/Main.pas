@@ -1,7 +1,5 @@
 unit Main;
 
-{$I DELPHIAREA.INC}
-
 interface
 
 uses
@@ -9,7 +7,7 @@ uses
   Winapi.Windows, Winapi.Messages,
   Vcl.Graphics, Vcl.Controls,Vcl.Forms, Vcl.ImgList,Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.ExtCtrls, Vcl.Tabs, Vcl.ComCtrls, Vcl.Menus, Vcl.ToolWin,Vcl.ExtDlgs,
-  Preview;
+  Preview, System.ImageList;
 
 type
   TMainForm = class(TForm)
@@ -253,7 +251,7 @@ begin
 
   PrintPreview.Zoom := 100;
   PrintPreview.Grayscale := [];
-  {$IFDEF COMPILER7_UP}
+  {$IF CompilerVersion >= 15}
   PrintPreview.SetPageSetupParameters(PageSetupDialog);
   {$ENDIF}
   btnPrintableArea.Down := PrintPreview.ShowPrintableArea;
@@ -299,7 +297,7 @@ end;
 
 procedure TMainForm.btnPageSetupClick(Sender: TObject);
 begin
-  {$IFDEF COMPILER7_UP}
+  {$IF CompilerVersion >= 15}
   if PageSetupDialog.Execute then
     GeneratePages;
   {$ENDIF}
@@ -310,7 +308,7 @@ begin
   if PrinterSetupDialog.Execute then
   begin
     PrintPreview.GetPrinterOptions;
-    {$IFDEF COMPILER7_UP}
+    {$IF CompilerVersion >= 15}
     PrintPreview.SetPageSetupParameters(PageSetupDialog);
     {$ENDIF}
     GeneratePages;
@@ -459,7 +457,7 @@ begin
     btnSaveTIF.Enabled := PrintPreview.CanSaveAsTIF and (PrintPreview.TotalPages > 0);
     btnPrint.Enabled := PrintPreview.PrinterInstalled and (PrintPreview.TotalPages > 0);
     btnDirectPrint.Enabled := PrintPreview.PrinterInstalled and (PrintPreview.TotalPages > 0);
-    btnPageSetup.Enabled := {$IFDEF COMPILER7_UP} True {$ELSE} False {$ENDIF};
+    btnPageSetup.Enabled := {$IF CompilerVersion >= 15} True {$ELSE} False {$ENDIF};
     btnUnits.Enabled := True;
     StatusBar.Panels[0].Text := Format('Page %d of %d',
       [PrintPreview.CurrentPage, PrintPreview.TotalPages]);
@@ -606,7 +604,7 @@ procedure TMainForm.GeneratePages;
 begin
   with PrintPreview do
   begin
-    {$IFDEF COMPILER7_UP}
+    {$IF CompilerVersion >= 15}
     PageBoundsAfterMargin := GetPageSetupParameters(PageSetupDialog);
     {$ELSE}
     PageBoundsAfterMargin := PageBounds;

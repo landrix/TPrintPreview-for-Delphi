@@ -2,7 +2,7 @@ program Viewer;
 
 uses
   Vcl.Forms,
-  Main in 'Main.pas' {MainForm},
+  MainViewer in 'MainViewer.pas' {MainForm},
   Preview in '..\..\Preview.pas';
 
 {$R *.RES}
