@@ -16,9 +16,26 @@
 {  Use Synopse library to output preview as PDF document                       }
 {  Get the library from http://www.synopse.info                                }
 {------------------------------------------------------------------------------}
-{.$DEFINE SYNOPSE}
+{.$DEFINE PDF_SYNOPSE}
 
-unit Preview;
+{------------------------------------------------------------------------------}
+{  Use dsPDF library to output preview as PDF document                         }
+{  Get the newest library from http://delphistep.cis.si/dspdf.htm              }
+{------------------------------------------------------------------------------}
+{.$DEFINE PDF_DSPDF}
+
+{------------------------------------------------------------------------------}
+{  Use wPDF library to output preview as PDF document                          }
+{  Get the newest library from http://www.wpcubed.com/products/wpdf/index.htm  }
+{------------------------------------------------------------------------------}
+{.$DEFINE PDF_WPDF}
+
+{------------------------------------------------------------------------------}
+{  Register Components in IDE                                                  }
+{------------------------------------------------------------------------------}
+{.$DEFINE REGISTER}
+
+unit Preview_new;
 
 interface
 
@@ -42,10 +59,10 @@ const
   crGrab = 11; //pvg
 
 type
-
   EPrintPreviewError = class(Exception);
   EPreviewLoadError = class(EPrintPreviewError);
   EPDFLibraryError = class(EPrintPreviewError);
+  EPDFError = class(EPrintPreviewError);
 
   { TTemporaryFileStream }
 
@@ -506,8 +523,10 @@ type
     procedure CreatePrinterCanvas(out ACanvas: TCanvas); virtual;
     procedure ClosePrinterCanvas(var ACanvas: TCanvas); virtual;
     procedure ScaleCanvas(ACanvas: TCanvas); virtual;
+  public
     function HorzPixelsPerInch: Integer; virtual;
     function VertPixelsPerInch: Integer; virtual;
+  protected
     procedure RegisterThumbnailViewer(ThumbnailView: TThumbnailPreview); virtual;
     procedure UnregisterThumbnailViewer(ThumbnailView: TThumbnailPreview); virtual;
     procedure RebuildThumbnails; virtual;
@@ -524,6 +543,7 @@ type
     function ConvertXY(X, Y: Integer; InUnits, OutUnits: TUnits): TPoint;
     function ConvertX(X: Integer; InUnits, OutUnits: TUnits): Integer;
     function ConvertY(Y: Integer; InUnits, OutUnits: TUnits): Integer;
+    function ConvertRect(Rec: TRect; InUnits: TUnits; OutUnits: TUnits): TRect;
     function BoundsFrom(AUnits: TUnits; ALeft, ATop, AWidth, AHeight: Integer): TRect;
     function RectFrom(AUnits: TUnits; ALeft, ATop, ARight, ABottom: Integer): TRect;
     function PointFrom(AUnits: TUnits; X, Y: Integer): TPoint;
@@ -870,6 +890,7 @@ type
     property Keywords: AnsiString read FKeywords write FKeywords;
   end;
 
+  {$IFDEF PDF_DSPDF}
   { TdsPDF }
 
   TdsPDF = class(TObject)
@@ -899,6 +920,7 @@ type
     function RenderFile(const FileName: AnsiString): Integer;
     function RenderMetaFile(Metafile: TMetafile): Integer;
   end;
+  {$ENDIF}
 
   { GDIPlusSubset }
 
@@ -1027,33 +1049,41 @@ const
     (ID: DMPAPER_A3_EXTRA_TRANSVERSE;     Width: 03220;     Height: 04450;     Units: mmLoMetric),
     (ID: DMPAPER_USER;                    Width: 0;         Height: 0;         Units: mmPixel));
 
-function ConvertUnits(Value, DPI: Integer; InUnits, OutUnits: TUnits): Integer;
+type
+  TPrintPreviewHelper = class(TObject)
+  private
+    class procedure RaiseOutOfMemory;
+    class procedure DrawBitmapAsDIB(DC: HDC; Bitmap: TBitmap; const Rect: TRect);
+  public
+    class function ConvertUnits(Value, DPI: Integer; InUnits, OutUnits: TUnits): Integer;
+    class procedure DrawGraphic(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic);
+    class procedure StretchDrawGraphic(Canvas: TCanvas; const Rect: TRect; Graphic: TGraphic);
+    class procedure DrawGrayscale(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic;
+      Brightness: Integer = 0; Contrast: Integer = 0);
+    class procedure StretchDrawGrayscale(Canvas: TCanvas; const Rect: TRect; Graphic: TGraphic;
+      Brightness: Integer = 0; Contrast: Integer = 0);
+    class function CreateWinControlImage(WinControl: TWinControl): TGraphic;
+    class procedure ConvertBitmapToGrayscale(Bitmap: TBitmap;
+      Brightness: Integer = 0; Contrast: Integer = 0);
+    class procedure SmoothDraw(Canvas: TCanvas; const Rect: TRect; Metafile: TMetafile);
+    class procedure SwapValues(var A, B: Integer);
+  end;
 
-procedure DrawGraphic(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic);
-procedure StretchDrawGraphic(Canvas: TCanvas; const Rect: TRect; Graphic: TGraphic);
-
-procedure DrawGrayscale(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic;
-  Brightness: Integer = 0; Contrast: Integer = 0);
-procedure StretchDrawGrayscale(Canvas: TCanvas; const Rect: TRect; Graphic: TGraphic;
-  Brightness: Integer = 0; Contrast: Integer = 0);
-
-function CreateWinControlImage(WinControl: TWinControl): TGraphic;
-
-procedure ConvertBitmapToGrayscale(Bitmap: TBitmap;
-  Brightness: Integer = 0; Contrast: Integer = 0);
-
-procedure SmoothDraw(Canvas: TCanvas; const Rect: TRect; Metafile: TMetafile);
-
+{$IFDEF PDF_DSPDF}
 function dsPDF: TdsPDF;
+{$ENDIF}
 
+{$IFDEF REGISTER}
 procedure Register;
+{$ENDIF}
 
 implementation
 
-{$R *.RES}
+{$R Preview.RES}
 
 uses
-  {$IFDEF SYNOPSE} SynPdf, {$ENDIF}
+  {$IFDEF PDF_SYNOPSE} SynPdf, {$ENDIF}
+  {$IFDEF PDF_WPDF} WPPDFR1,WPPDFR2, {$ENDIF}
   System.Types,
   Vcl.ImgList,
   WinApi.RichEdit, WinApi.CommCtrl, System.Math;
@@ -1061,7 +1091,10 @@ uses
 resourcestring
   SOutOfMemoryError = 'There is not enough memory to create a new page';
   SLoadError        = 'The content cannot be loaded';
+{$IFDEF PDF_DSPDF}
   SdsPDFError       = 'The dsPDF library is not available';
+{$ENDIF}
+  PDFError          = 'No PDF support';
   SRotated          = 'Rotated';
 
 const
@@ -1089,6 +1122,7 @@ begin
   Result := _gdiPlus;
 end;
 
+{$IFDEF PDF_DSPDF}
 var _dsPDF: TdsPDF = nil;
 
 function dsPDF: TdsPDF;
@@ -1097,6 +1131,7 @@ begin
     _dsPDF := TdsPDF.Create;
   Result := _dsPDF;
 end;
+{$ENDIF}
 
 procedure TransparentStretchDIBits(dstDC: HDC;
   dstX, dstY: Integer; dstW, dstH: Integer;
@@ -1150,7 +1185,7 @@ begin
   end;
 end;
 
-procedure DrawBitmapAsDIB(DC: HDC; Bitmap: TBitmap; const Rect: TRect);
+class procedure TPrintPreviewHelper.DrawBitmapAsDIB(DC: HDC; Bitmap: TBitmap; const Rect: TRect);
 var
   BitmapHeader: pBitmapInfo;
   BitmapImage: Pointer;
@@ -1219,7 +1254,7 @@ begin
   end;
 end;
 
-procedure DrawGraphic(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic);
+class procedure TPrintPreviewHelper.DrawGraphic(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic);
 var
   Rect: TRect;
 begin
@@ -1230,14 +1265,14 @@ begin
   StretchDrawGraphic(Canvas, Rect, Graphic);
 end;
 
-procedure StretchDrawGraphic(Canvas: TCanvas; const Rect: TRect; Graphic: TGraphic);
+class procedure TPrintPreviewHelper.StretchDrawGraphic(Canvas: TCanvas; const Rect: TRect; Graphic: TGraphic);
 var
   Bitmap: TBitmap;
 begin
   if Graphic is TBitmap then
     DrawBitmapAsDIB(Canvas.Handle, TBitmap(Graphic), Rect)
   else if Graphic is TMetafile then
-    SmoothDraw(Canvas, Rect, TMetafile(Graphic))
+    TPrintPreviewHelper.SmoothDraw(Canvas, Rect, TMetafile(Graphic))
   else
   begin
     Bitmap := TBitmap.Create;
@@ -1254,7 +1289,7 @@ begin
   end;
 end;
 
-procedure DrawGrayscale(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic;
+class procedure TPrintPreviewHelper.DrawGrayscale(Canvas: TCanvas; X, Y: Integer; Graphic: TGraphic;
   Brightness, Contrast: Integer);
 var
   Rect: TRect;
@@ -1263,10 +1298,10 @@ begin
   Rect.Top := Y;
   Rect.Right := X + Graphic.Width;
   Rect.Bottom := Y + Graphic.Height;
-  StretchDrawGrayscale(Canvas, Rect, Graphic, Brightness, Contrast);
+  TPrintPreviewHelper.StretchDrawGrayscale(Canvas, Rect, Graphic, Brightness, Contrast);
 end;
 
-procedure StretchDrawGrayscale(Canvas: TCanvas; const Rect: TRect;
+class procedure TPrintPreviewHelper.StretchDrawGrayscale(Canvas: TCanvas; const Rect: TRect;
   Graphic: TGraphic; Brightness, Contrast: Integer);
 var
   Bitmap: TBitmap;
@@ -1278,14 +1313,14 @@ begin
     Bitmap.Height := Graphic.Height;
     Bitmap.Canvas.Draw(0, 0, Graphic);
     Bitmap.Transparent := Graphic.Transparent;
-    ConvertBitmapToGrayscale(Bitmap, Brightness, Contrast);
+    TPrintPreviewHelper.ConvertBitmapToGrayscale(Bitmap, Brightness, Contrast);
     DrawBitmapAsDIB(Canvas.Handle, Bitmap, Rect);
   finally
     Bitmap.Free;
   end;
 end;
 
-function CreateWinControlImage(WinControl: TWinControl): TGraphic;
+class function TPrintPreviewHelper.CreateWinControlImage(WinControl: TWinControl): TGraphic;
 var
   Metafile: TMetafile;
   MetaCanvas: TCanvas;
@@ -1312,7 +1347,7 @@ begin
   Result := Metafile;
 end;
 
-procedure ConvertBitmapToGrayscale(Bitmap: TBitmap; Brightness, Contrast: Integer);
+class procedure TPrintPreviewHelper.ConvertBitmapToGrayscale(Bitmap: TBitmap; Brightness, Contrast: Integer);
 // If we consider RGB values in range [0,1] and contrast and brightness in
 // rannge [-1,+1], the formula of this function became:
 // Gray = Red * 0.30 + Green * 0.59 + Blue * 0.11
@@ -1358,7 +1393,7 @@ begin
   end;
 end;
 
-procedure SmoothDraw(Canvas: TCanvas; const Rect: TRect; Metafile: TMetafile);
+class procedure TPrintPreviewHelper.SmoothDraw(Canvas: TCanvas; const Rect: TRect; Metafile: TMetafile);
 begin
   gdiPlus.Draw(Canvas, Rect, Metafile);
 end;
@@ -2529,14 +2564,14 @@ begin
     inherited Assign(Source);
 end;
 
-{ TPrintPreview }
+{ TPrintPreviewHelper }
 
-procedure RaiseOutOfMemory;
+class procedure TPrintPreviewHelper.RaiseOutOfMemory;
 begin
   raise EOutOfMemory.Create(SOutOfMemoryError);
 end;
 
-procedure SwapValues(var A, B: Integer);
+class procedure TPrintPreviewHelper.SwapValues(var A, B: Integer);
 var
   T: Integer;
 begin
@@ -2545,7 +2580,7 @@ begin
   B := T;
 end;
 
-function ConvertUnits(Value, DPI: Integer; InUnits, OutUnits: TUnits): Integer;
+class function TPrintPreviewHelper.ConvertUnits(Value, DPI: Integer; InUnits, OutUnits: TUnits): Integer;
 begin
   Result := Value;
   case InUnits of
@@ -2622,10 +2657,16 @@ begin
   end;
 end;
 
+{ TPrintPreview }
+
 constructor TPrintPreview.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   ControlStyle := ControlStyle - [csAcceptsControls] + [csDisplayDragImage];
+  VertScrollBar.Visible := true;
+  HorzScrollBar.Visible := true;
+  VertScrollBar.Tracking := true;
+  HorzScrollBar.Tracking := true;
   Align := alClient;
   TabStop := True;
   ParentFont := False;
@@ -2692,18 +2733,18 @@ end;
 
 function TPrintPreview.ConvertX(X: Integer; InUnits, OutUnits: TUnits): Integer;
 begin
-  Result := ConvertUnits(X, HorzPixelsPerInch, InUnits, OutUnits);
+  Result := TPrintPreviewHelper.ConvertUnits(X, HorzPixelsPerInch, InUnits, OutUnits);
 end;
 
 function TPrintPreview.ConvertY(Y: Integer; InUnits, OutUnits: TUnits): Integer;
 begin
-  Result := ConvertUnits(Y, VertPixelsPerInch, InUnits, OutUnits);
+  Result := TPrintPreviewHelper.ConvertUnits(Y, VertPixelsPerInch, InUnits, OutUnits);
 end;
 
 function TPrintPreview.ConvertXY(X, Y: Integer; InUnits, OutUnits: TUnits): TPoint;
 begin
-  Result.X := ConvertUnits(X, HorzPixelsPerInch, InUnits, OutUnits);
-  Result.Y := ConvertUnits(Y, VertPixelsPerInch, InUnits, OutUnits);
+  Result.X := TPrintPreviewHelper.ConvertUnits(X, HorzPixelsPerInch, InUnits, OutUnits);
+  Result.Y := TPrintPreviewHelper.ConvertUnits(Y, VertPixelsPerInch, InUnits, OutUnits);
 end;
 
 procedure TPrintPreview.ConvertPoints(var Points; NumPoints: Integer;
@@ -2716,12 +2757,25 @@ begin
   begin
     with pPoints^ do
     begin
-      X := ConvertUnits(X, HorzPixelsPerInch, InUnits, OutUnits);
-      Y := ConvertUnits(Y, VertPixelsPerInch, InUnits, OutUnits);
+      X := TPrintPreviewHelper.ConvertUnits(X, HorzPixelsPerInch, InUnits, OutUnits);
+      Y := TPrintPreviewHelper.ConvertUnits(Y, VertPixelsPerInch, InUnits, OutUnits);
     end;
     Inc(pPoints);
     Dec(NumPoints);
   end;
+end;
+
+function TPrintPreview.ConvertRect(Rec: TRect; InUnits,
+  OutUnits: TUnits): TRect;
+begin
+  Result.Left := TPrintPreviewHelper.ConvertUnits(Rec.Left, HorzPixelsPerInch, InUnits, OutUnits);
+  Result.Top := TPrintPreviewHelper.ConvertUnits(Rec.Top, VertPixelsPerInch, InUnits, OutUnits);
+  Result.Right := TPrintPreviewHelper.ConvertUnits(Rec.Right, HorzPixelsPerInch, InUnits, OutUnits);
+  Result.Bottom := TPrintPreviewHelper.ConvertUnits(Rec.Bottom, VertPixelsPerInch, InUnits, OutUnits);
+  Result.TopLeft.X := Result.Left;
+  Result.TopLeft.Y := Result.Top;
+  Result.BottomRight.X := Result.Right;
+  Result.BottomRight.Y := Result.Bottom;
 end;
 
 function TPrintPreview.BoundsFrom(AUnits: TUnits;
@@ -2801,7 +2855,7 @@ begin
   Rect.Right := X + Result.X;
   Rect.Top := Y;
   Rect.Bottom := Y + Result.Y;
-  StretchDrawGraphic(Canvas, Rect, Graphic);
+  TPrintPreviewHelper.StretchDrawGraphic(Canvas, Rect, Graphic);
 end;
 
 function TPrintPreview.PaintGraphicEx(const Rect: TRect; Graphic: TGraphic;
@@ -2853,7 +2907,7 @@ begin
     Result.TopLeft := Rect.TopLeft;
   Result.Right := Result.Left + W;
   Result.Bottom := Result.Top + H;
-  StretchDrawGraphic(Canvas, Result, Graphic);
+  TPrintPreviewHelper.StretchDrawGraphic(Canvas, Result, Graphic);
 end;
 
 //rmk
@@ -2910,7 +2964,7 @@ begin
   Result.Right := Result.Left + W;
   Result.Bottom := Result.Top + H;
 
-  StretchDrawGraphic(Canvas, Result, Graphic);
+  TPrintPreviewHelper.StretchDrawGraphic(Canvas, Result, Graphic);
 end;
 
 function TPrintPreview.PaintWinControl(X, Y: Integer;
@@ -2918,7 +2972,7 @@ function TPrintPreview.PaintWinControl(X, Y: Integer;
 var
   Graphic: TGraphic;
 begin
-  Graphic := CreateWinControlImage(WinControl);
+  Graphic := TPrintPreviewHelper.CreateWinControlImage(WinControl);
   try
     PaintGraphic(X, Y, Graphic);
   finally
@@ -2931,7 +2985,7 @@ function TPrintPreview.PaintWinControlEx(const Rect: TRect;
 var
   Graphic: TGraphic;
 begin
-  Graphic := CreateWinControlImage(WinControl);
+  Graphic := TPrintPreviewHelper.CreateWinControlImage(WinControl);
   try
     PaintGraphicEx(Rect, Graphic, Proportinal, ShrinkOnly, Center);
   finally
@@ -2944,7 +2998,7 @@ function TPrintPreview.PaintWinControlEx2(const Rect: TRect;
 var
   Graphic: TGraphic;
 begin
-  Graphic := CreateWinControlImage(WinControl);
+  Graphic := TPrintPreviewHelper.CreateWinControlImage(WinControl);
   try
     PaintGraphicEx2(Rect, Graphic, VertAlign, HorzAlign);
   finally
@@ -3379,7 +3433,7 @@ begin
         begin
           PaperSize := ConvertXY(PaperWidth, PaperHeight, Units, mmLoMetric);
           if FOrientation = poLandscape then
-            SwapValues(PaperSize.X, PaperSize.Y);
+            TPrintPreviewHelper.SwapValues(PaperSize.X, PaperSize.Y);
           dmFields := dmFields or DM_PAPERSIZE;
           dmPaperSize := DMPAPER_USER;
           dmFields := dmFields or DM_PAPERWIDTH;
@@ -3443,16 +3497,16 @@ begin
           NewPaperType := FindPaperTypeByID(dmPaperSize);
         if NewPaperType = pCustom then
         begin
-          NewWidth := ConvertUnits(GetDeviceCaps(Printer.Handle, PHYSICALWIDTH),
+          NewWidth := TPrintPreviewHelper.ConvertUnits(GetDeviceCaps(Printer.Handle, PHYSICALWIDTH),
             GetDeviceCaps(Printer.Handle, LOGPIXELSX), mmPixel, Units);
-          NewHeight := ConvertUnits(GetDeviceCaps(Printer.Handle, PHYSICALHEIGHT),
+          NewHeight := TPrintPreviewHelper.ConvertUnits(GetDeviceCaps(Printer.Handle, PHYSICALHEIGHT),
             GetDeviceCaps(Printer.Handle, LOGPIXELSY), mmPixel, Units);
         end
         else
         begin
           GetPaperTypeSize(NewPaperType, NewWidth, NewHeight, Units);
           if NewOrientation = poLandscape then
-            SwapValues(NewWidth, NewHeight);
+            TPrintPreviewHelper.SwapValues(NewWidth, NewHeight);
         end;
         SetPaperSizeOrientation(NewWidth, NewHeight, NewOrientation);
         if (dmFields and DM_FORMNAME) = DM_FORMNAME then
@@ -3745,7 +3799,7 @@ begin
           end;
         end;
         if IsRotated then
-          SwapValues(mmPaperSize.X, mmPaperSize.Y);
+          TPrintPreviewHelper.SwapValues(mmPaperSize.X, mmPaperSize.Y);
         if Metric then
           FVirtualFormName := Format('%umm x %umm', [mmPaperSize.X, mmPaperSize.Y])
         else
@@ -4117,7 +4171,7 @@ begin
   if Assigned(FOnPrintBackground) then
     FOnPrintBackground(Self, PageNo, Canvas);
   if gsPrint in Grayscale then
-    StretchDrawGrayscale(Canvas, Rect, FPageList[PageNo-1], FGrayBrightness, FGrayContrast)
+    TPrintPreviewHelper.StretchDrawGrayscale(Canvas, Rect, FPageList[PageNo-1], FGrayBrightness, FGrayContrast)
   else
     Canvas.StretchDraw(Rect, FPageList[PageNo-1]);
   if Assigned(FOnPrintAnnotation) then
@@ -4146,7 +4200,7 @@ begin
       Bitmap.TransparentColor := FPaperView.PaperColor;
       Bitmap.Transparent := True;
       gdiPlus.Draw(Bitmap.Canvas, BitmapRect, FPageList[PageNo-1]);
-      ConvertBitmapToGrayscale(Bitmap, FGrayBrightness, FGrayContrast);
+      TPrintPreviewHelper.ConvertBitmapToGrayscale(Bitmap, FGrayBrightness, FGrayContrast);
       Canvas.Draw(VisibleRect.Left, VisibleRect.Top, Bitmap);
     finally
       Bitmap.Free;
@@ -4241,7 +4295,7 @@ begin
     begin
       GetPaperTypeSize(FPaperType, FPageExt.X, FPageExt.Y, Value);
       if FOrientation = poLandscape then
-        SwapValues(FPageExt.X, FPageExt.Y);
+        TPrintPreviewHelper.SwapValues(FPageExt.X, FPageExt.Y);
     end
     else
       ConvertPoints(FPageExt, 1, FUnits, Value);
@@ -4274,7 +4328,7 @@ begin
       with PaperSizes[FPaperType] do
         FPageExt := ConvertXY(Width, Height, Units, FUnits);
       if FOrientation = poLandscape then
-        SwapValues(FPageExt.X, FPageExt.Y);
+        TPrintPreviewHelper.SwapValues(FPageExt.X, FPageExt.Y);
       DoPaperChange;
     end;
   end;
@@ -4301,7 +4355,7 @@ begin
   if (FOrientation <> Value) and (FState = psReady) then
   begin
     FOrientation := Value;
-    SwapValues(FPageExt.X, FPageExt.Y);
+    TPrintPreviewHelper.SwapValues(FPageExt.X, FPageExt.Y);
     DoPaperChange;
   end;
 end;
@@ -4365,12 +4419,12 @@ begin
     DPI.Y := GetDeviceCaps(Printer.Handle, LOGPIXELSY);
     Offset.X := GetDeviceCaps(Printer.Handle, PHYSICALOFFSETX);
     Offset.Y := GetDeviceCaps(Printer.Handle, PHYSICALOFFSETY);
-    Offset.X := ConvertUnits(Offset.X, DPI.X, mmPixel, Units);
-    Offset.Y := ConvertUnits(Offset.Y, DPI.Y, mmPixel, Units);
+    Offset.X := TPrintPreviewHelper.ConvertUnits(Offset.X, DPI.X, mmPixel, Units);
+    Offset.Y := TPrintPreviewHelper.ConvertUnits(Offset.Y, DPI.Y, mmPixel, Units);
     Size.X := GetDeviceCaps(Printer.Handle, HORZRES);                           //Mixy
     Size.Y := GetDeviceCaps(Printer.Handle, VERTRES);                           //Mixy
-    Size.X := ConvertUnits(Size.X, DPI.X, mmPixel, Units);                      //Mixy
-    Size.Y := ConvertUnits(Size.Y, DPI.Y, mmPixel, Units);                      //Mixy
+    Size.X := TPrintPreviewHelper.ConvertUnits(Size.X, DPI.X, mmPixel, Units);                      //Mixy
+    Size.Y := TPrintPreviewHelper.ConvertUnits(Size.Y, DPI.Y, mmPixel, Units);                      //Mixy
     SetRect(Result, Offset.X, Offset.Y, Offset.X + Size.X, Offset.Y + Size.Y);  //Mixy
   end
   else
@@ -4392,9 +4446,9 @@ begin
     end
     else
     begin
-      Result.Right := ConvertUnits(FPageExt.X,
+      Result.Right := TPrintPreviewHelper.ConvertUnits(FPageExt.X,
         GetDeviceCaps(Printer.Handle, LOGPIXELSX), FUnits, mmPixel);
-      Result.Bottom := ConvertUnits(FPageExt.Y,
+      Result.Bottom := TPrintPreviewHelper.ConvertUnits(FPageExt.Y,
         GetDeviceCaps(Printer.Handle, LOGPIXELSY), FUnits, mmPixel);
     end;
     OffsetRect(Result,
@@ -4620,9 +4674,9 @@ var
   LogExt, DevExt: TPoint;
 begin
   LogExt := FPageExt;
-  DevExt.X := ConvertUnits(LogExt.X,
+  DevExt.X := TPrintPreviewHelper.ConvertUnits(LogExt.X,
     GetDeviceCaps(ACanvas.Handle, LOGPIXELSX), FUnits, mmPixel);
-  DevExt.Y := ConvertUnits(LogExt.Y,
+  DevExt.Y := TPrintPreviewHelper.ConvertUnits(LogExt.Y,
     GetDeviceCaps(ACanvas.Handle, LOGPIXELSY), FUnits, mmPixel);
   SetMapMode(ACanvas.Handle, MM_ANISOTROPIC);
   SetWindowExtEx(ACanvas.Handle, LogExt.X, LogExt.Y, nil);
@@ -4657,7 +4711,7 @@ begin
     begin
       ACanvas.Free;
       ACanvas := nil;
-      RaiseOutOfMemory;
+      TPrintPreviewHelper.RaiseOutOfMemory;
     end;
   except
     AMetafile.Free;
@@ -4679,7 +4733,7 @@ begin
   begin
     AMetafile.Free;
     AMetafile := nil;
-    RaiseOutOfMemory;
+    TPrintPreviewHelper.RaiseOutOfMemory;
   end;
 end;
 
@@ -5090,15 +5144,17 @@ begin
 end;
 
 procedure TPrintPreview.SaveAsPDF(const FileName: String);
+{$IFDEF PDF_SYNOPSE}
 var
   PageNo: Integer;
-{$IFDEF SYNOPSE}
   pdf: TPdfDocument;
-{$ELSE}
+{$ELSEIF PDF_DSPDF}
+var
   AnyPageRendered: Boolean;
-{$ENDIF}
+{$ELSEIF PDF_WPDF}
+{$IFEND}
 begin
-{$IFDEF SYNOPSE}
+{$IFDEF PDF_SYNOPSE}
   pdf := TPdfDocument.Create;
   try
     ChangeState(psSavingPDF);
@@ -5132,7 +5188,7 @@ begin
   finally
     pdf.Free;
   end;
-{$ELSE}
+{$ELSEIF PDF_DSPDF}
   if dsPDF.Exists then
   begin
     ChangeState(psSavingPDF);
@@ -5169,16 +5225,24 @@ begin
   end
   else
     raise EPDFLibraryError.Create(SdsPDFError);
-{$ENDIF}
+{$ELSEIF PDF_WPDF}
+
+{$ELSE}
+  raise EPDFError.Create(PDFError);
+{$IFEND}
 end;
 
 function TPrintPreview.CanSaveAsPDF: Boolean;
 begin
-  {$IFDEF SYNOPSE}
+  {$IFDEF PDF_SYNOPSE}
   Result := True;
-  {$ELSE}
+  {$ELSEIF PDF_DSPDF}}
   Result := dsPDF.Exists;
-  {$ENDIF}
+  {$ELSEIF PDF_WPDF}}
+  Result := true;
+  {$ELSE}
+  Result := false;
+  {$IFEND}
 end;
 
 procedure TPrintPreview.Print;
@@ -6314,6 +6378,8 @@ begin
   end;
 end;
 
+{$IFDEF PDF_DSPDF}
+
 { TdsPDF }
 
 constructor TdsPDF.Create;
@@ -6450,6 +6516,7 @@ begin
     Stream.Free;
   end;
 end;
+{$ENDIF}
 
 { TGDIPlusSubset }
 
@@ -6735,17 +6802,19 @@ begin
   FreeMem(MF, SizeOf(TMultiFrameRec));
 end;
 
-{ Componenets' Registration }
+{ Components' Registration }
 
+{$IFDEF REGISTER}
 procedure Register;
 begin
   RegisterComponents('Delphi Area', [TPrintPreview, TThumbnailPreview, TPaperPreview]);
 end;
+{$ENDIF}
 
 initialization
   Screen.Cursors[crHand] := LoadCursor(hInstance, 'CURSOR_HAND');
   Screen.Cursors[crGrab] := LoadCursor(hInstance, 'CURSOR_GRAB');
 finalization
-  if Assigned(_dsPDF) then _dsPDF.Free;
+  {$IFDEF PDF_DSPDF}if Assigned(_dsPDF) then _dsPDF.Free;{$ENDIF}
   if Assigned(_gdiPlus) then _gdiPlus.Free;
 end.
