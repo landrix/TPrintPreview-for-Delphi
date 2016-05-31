@@ -5601,9 +5601,10 @@ end;
 
 destructor TThumbnailPreview.Destroy;
 begin
+  LargeImages.Free;
   FPaperViewOptions.Free;
   Page.Free;
-  inherited Destroy;
+  inherited;
 end;
 
 procedure TThumbnailPreview.CMFontChanged(var Message: TMessage);
@@ -5713,8 +5714,8 @@ end;
 
 procedure TThumbnailPreview.DestroyWnd;
 begin
-  Items.Count := 0;
   FCurrentIndex := -1;
+  Items.Clear;
   inherited DestroyWnd;
 end;
 
@@ -6402,7 +6403,7 @@ destructor TdsPDF.Destroy;
 begin
   if Handle > 0 then
     FreeLibrary(Handle);
-  inherited Destroy;
+  inherited;
 end;
 
 function TdsPDF.Exists: Boolean;
