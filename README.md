@@ -1,9 +1,11 @@
 # TPrintPreview-for-Delphi
 
-Print Preview Components 5.91 (January 3, 2016)
+Print Preview Components 5.93 (March 9, 2018)
 
 Import from http://www.delphiarea.com/products/delphi-components/preview/  
 Copyright Kambiz R. Khojasteh
+
+Modifications Sven Harazim
 
 LICENSE  
 The Print Preview components (TPrintPreview, TThumbnailPreview, and TPaperPreview) are freeware. You may copy components' files AS LONG AS YOU COPY ALL OF THEM. If you want to change the source code in order to improve the components' features, performance, etc. please send me the new source code so that I can have a look at it. The changed source code should contain descriptions what you have changed, and of course your name. The only thing you MAY NOT CHANGE is the ORIGINAL COPYRIGHT INFORMATION.

@@ -6,9 +6,9 @@
 {  kambiz@delphiarea.com                                                       }
 {  http://www.delphiarea.com                                                   }
 {                                                                              }
-{  TPrintPreview v5.91                                                         }
+{  TPrintPreview v5.93                                                         }
 {  TPaperPreview v2.20                                                         }
-{  TThumbnailPreview v2.11                                                     }
+{  TThumbnailPreview v2.12                                                     }
 {                                                                              }
 {------------------------------------------------------------------------------}
 
@@ -2599,6 +2599,22 @@ begin
   B := T;
 end;
 
+function ScaleToDeviceContext(DC: HDC; const Pt: TPoint): TPoint;
+var
+  Handle: HDC;
+begin
+  Handle := DC;
+  if DC = 0 then
+    Handle := GetDC(0);
+  try
+    Result.X := Round(Pt.X * GetDeviceCaps(Handle, HORZRES) / GetDeviceCaps(Handle, DESKTOPHORZRES));
+    Result.Y := Round(Pt.Y * GetDeviceCaps(Handle, VERTRES) / GetDeviceCaps(Handle, DESKTOPVERTRES));
+  finally
+    if DC = 0 then
+      ReleaseDC(0, Handle);
+  end;
+end;
+
 function ConvertUnits(Value, DPI: Integer; InUnits, OutUnits: TUnits): Integer;
 begin
   Result := Value;
@@ -3188,43 +3204,35 @@ end;
 
 procedure TPrintPreview.WMMouseWheel(var Message: TMessage);
 var
-  IsNeg: Boolean;
-  Rect: TRect;
-  Pt: TPoint;
+  Amount: Integer;
+  ScrollDir: Integer;
+  Shift: TShiftState;
   I: Integer;
 begin
-  GetWindowRect(WindowHandle, Rect);
-  Pt.X := Message.LParamLo;
-  Pt.Y := Message.LParamHi;
-  if PtInRect(Rect, Pt) then
+  if PtInRect(ClientRect, ScreenToClient(Mouse.CursorPos)) then
   begin
-    Message.Result := 1;
+    Message.Result := 0;
     Inc(WheelAccumulator, SmallInt(Message.WParamHi));
-    while Abs(WheelAccumulator) >= WHEEL_DELTA do
+    Amount := WheelAccumulator div WHEEL_DELTA;
+    if Amount <> 0 then
     begin
-      IsNeg := WheelAccumulator < 0;
-      WheelAccumulator := Abs(WheelAccumulator) - WHEEL_DELTA;
-      if IsNeg then
+      WheelAccumulator := WheelAccumulator mod WHEEL_DELTA;
+      Shift := KeyboardStateToShiftState;
+      if Shift = [] then
       begin
-        WheelAccumulator := -WheelAccumulator;
-        case LoWord(Message.WParam) of
-          MK_CONTROL: Zoom := Zoom - ZoomStep;
-          MK_SHIFT, MK_MBUTTON: CurrentPage := CurrentPage + 1;
-          0: for I := 0 to 4 do Perform(WM_VSCROLL, SB_LINEDOWN, 0); // klin
-        else
-          Message.Result := 0;
+        ScrollDir := SB_LINEUP;
+        if Amount < 0 then
+        begin
+          ScrollDir := SB_LINEDOWN;
+          Amount := -Amount;
         end;
+        for I := 1 to Amount do
+          Perform(WM_VSCROLL, ScrollDir, 0);
       end
-      else
-      begin
-        case LoWord(Message.WParam) of
-          MK_CONTROL: Zoom := Zoom + ZoomStep;
-          MK_SHIFT, MK_MBUTTON: CurrentPage := CurrentPage - 1;
-          0: for I := 0 to 4 do Perform(WM_VSCROLL, SB_LINEUP, 0); // klin
-        else
-          Message.Result := 0;
-        end;
-      end;
+      else if Shift = [ssCtrl] then
+        Zoom := Zoom + ZoomStep * Amount
+      else if (Shift = [ssShift]) or (Shift = [ssMiddle]) then
+        CurrentPage := CurrentPage + Amount;
     end;
   end;
 end;
@@ -4715,8 +4723,11 @@ procedure TPrintPreview.CreateMetafileCanvas(out AMetafile: TMetafile;
 begin
   AMetafile := TMetafile.Create;
   try
-    AMetafile.Width := FDeviceExt.X;
-    AMetafile.Height := FDeviceExt.Y;
+    with ScaleToDeviceContext(ReferenceDC, FDeviceExt) do
+    begin
+      AMetafile.Width := X;
+      AMetafile.Height := Y;
+    end;
     ACanvas := TMetafileCanvas.CreateWithComment(AMetafile, ReferenceDC,
       Format('%s - http://www.delphiarea.com', [ClassName]), PrintJobTitle);
     if ACanvas.Handle = 0 then
@@ -5599,12 +5610,17 @@ begin
   ParentColor := True;
   ReadOnly := True;
   ViewStyle := vsIcon;
-  LargeImages := TImageList.Create(Self);
+  LargeImages := TImageList.Create(nil);
   Align := alLeft;
 end;
 
 destructor TThumbnailPreview.Destroy;
+var
+  Images: TCustomImageList;
 begin
+  Images := LargeImages;
+  LargeImages := nil;
+  Images.Free;
   FPaperViewOptions.Free;
   Page.Free;
   inherited Destroy;
