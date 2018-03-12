@@ -35,7 +35,7 @@
 {------------------------------------------------------------------------------}
 {.$DEFINE REGISTER}
 
-unit Preview_new;
+unit Preview;
 
 interface
 
@@ -4712,7 +4712,7 @@ procedure TPrintPreview.CreateMetafileCanvas(out AMetafile: TMetafile;
 begin
   AMetafile := TMetafile.Create;
   try
-    with ScaleToDeviceContext(ReferenceDC, FDeviceExt) do
+    with TPrintPreviewHelper.ScaleToDeviceContext(ReferenceDC, FDeviceExt) do
     begin
       AMetafile.Width := X;
       AMetafile.Height := Y;

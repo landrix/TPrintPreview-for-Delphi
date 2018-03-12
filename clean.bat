@@ -17,7 +17,7 @@ rmdir /Q /S dcu
 
 rmdir /Q /S "Demo\General Demo\__history"
 rmdir /Q /S "Demo\RichText Demo\__history"
-rmdir /Q /S "Demo\Viewer Demo\__history"
+rmdir /Q /S "Demo\Viewer\__history"
 rmdir /Q /S "Demo\General Demo\__recovery"
 rmdir /Q /S "Demo\RichText Demo\__recovery"
-rmdir /Q /S "Demo\Viewer Demo\__recovery"
+rmdir /Q /S "Demo\Viewer\__recovery"
