@@ -85,36 +85,23 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  PrintPreview:= TPrintPreview.Create(self);
-  PrintPreview.Parent := self;
-  with PrintPreview do
-  begin
-    Left := 0;
-    Top := 0;
-    Width := 566;
-    Height := 464;
-    HorzScrollBar.Margin := 10;
-    HorzScrollBar.Tracking := True;
-    VertScrollBar.Margin := 10;
-    VertScrollBar.Tracking := True;
-    ParentFont := True;
-    TabOrder := 0;
-    UsePrinterOptions := True;
-    OnChange := PrintPreviewChange;
-  end;
+  PrintPreview:= TPrintPreview.Create(Panel);
+  PrintPreview.Parent := Panel;
+  PrintPreview.HorzScrollBar.Margin := 10;
+  PrintPreview.HorzScrollBar.Tracking := True;
+  PrintPreview.VertScrollBar.Margin := 10;
+  PrintPreview.VertScrollBar.Tracking := True;
+  PrintPreview.ParentFont := True;
+  PrintPreview.TabOrder := 0;
+  PrintPreview.UsePrinterOptions := True;
+  PrintPreview.OnChange := PrintPreviewChange;
+  PrintPreview.Align := alClient;
 
-  ThumbnailPreview := TThumbnailPreview.Create(self);
-  ThumbnailPreview.Parent := self;
-  with ThumbnailPreview do
-  begin
-    Left := 0;
-    Top := 0;
-    Width := 115;
-    Height := 493;
-    TabOrder := 0;
-    PrintPreview := PrintPreview;
-    PaperView.ShadowWidth := 1;
-  end;
+  ThumbnailPreview := TThumbnailPreview.Create(Panel);
+  ThumbnailPreview.Parent := Panel;
+  ThumbnailPreview.PrintPreview := PrintPreview;
+  ThumbnailPreview.PaperView.ShadowWidth := 1;
+  ThumbnailPreview.Align := alLeft;
 
   DragAcceptFiles(Handle, True);
   if ParamCount > 0 then

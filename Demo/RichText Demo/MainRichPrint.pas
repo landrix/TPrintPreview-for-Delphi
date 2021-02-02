@@ -54,46 +54,31 @@ implementation
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  PrintPreview:= TPrintPreview.Create(self);
-  PrintPreview.Parent := self;
-  with PrintPreview do
-  begin
-    Left := 0;
-    Top := 0;
-    Width := 557;
-    Height := 529;
-    HorzScrollBar.Margin := 10;
-    HorzScrollBar.Tracking := True;
-    VertScrollBar.Margin := 10;
-    VertScrollBar.Tracking := True;
-    ParentFont := True;
-    TabOrder := 0;
-    PaperView.BorderColor := clNavy;
-    PaperView.ShadowWidth := 4;
-    PrintJobTitle := 'TPrintPreview Sample Print';
-    UsePrinterOptions := True;
-    OnBeginDoc := PrintPreviewBeginDoc;
-    OnEndDoc := PrintPreviewEndDoc;
-    OnNewPage := PrintPreviewNewPage;
-    OnChange := PrintPreviewChange;
-    OnZoomChange := PrintPreviewZoomChange;
-    OnProgress := PrintPreviewProgress;
-    OnBeforePrint := PrintPreviewBeforePrint;
-    OnAfterPrint := PrintPreviewAfterPrint;
-  end;
+  PrintPreview:= TPrintPreview.Create(Panel1);
+  PrintPreview.Parent := Panel1;
+  PrintPreview.HorzScrollBar.Margin := 10;
+  PrintPreview.HorzScrollBar.Tracking := True;
+  PrintPreview.VertScrollBar.Margin := 10;
+  PrintPreview.VertScrollBar.Tracking := True;
+  PrintPreview.ParentFont := True;
+  PrintPreview.TabOrder := 0;
+  PrintPreview.UsePrinterOptions := True;
+  PrintPreview.Align := alClient;
+  PrintPreview.PrintJobTitle := 'TPrintPreview Sample Print';
+  PrintPreview.OnBeginDoc := PrintPreviewBeginDoc;
+  PrintPreview.OnEndDoc := PrintPreviewEndDoc;
+  PrintPreview.OnNewPage := PrintPreviewNewPage;
+  PrintPreview.OnChange := PrintPreviewChange;
+  PrintPreview.OnZoomChange := PrintPreviewZoomChange;
+  PrintPreview.OnProgress := PrintPreviewProgress;
+  PrintPreview.OnBeforePrint := PrintPreviewBeforePrint;
+  PrintPreview.OnAfterPrint := PrintPreviewAfterPrint;
 
-  ThumbnailPreview := TThumbnailPreview.Create(self);
-  ThumbnailPreview.Parent := self;
-  with ThumbnailPreview do
-  begin
-    Left := 0;
-    Top := 29;
-    Width := 115;
-    Height := 558;
-    TabOrder := 2;
-    PrintPreview := PrintPreview;
-    PaperView.ShadowWidth := 1;
-  end;
+  ThumbnailPreview := TThumbnailPreview.Create(Panel1);
+  ThumbnailPreview.Parent := Panel1;
+  ThumbnailPreview.PrintPreview := PrintPreview;
+  ThumbnailPreview.PaperView.ShadowWidth := 1;
+  ThumbnailPreview.Align := alLeft;
 
   Randomize;
   PrintPreview.ZoomState := zsZoomToFit;
