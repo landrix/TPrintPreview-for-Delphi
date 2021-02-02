@@ -4709,16 +4709,21 @@ end;
 
 procedure TPrintPreview.CreateMetafileCanvas(out AMetafile: TMetafile;
   out ACanvas: TCanvas);
+var
+  aDC:HDC;
 begin
   AMetafile := TMetafile.Create;
   try
-    with TPrintPreviewHelper.ScaleToDeviceContext(ReferenceDC, FDeviceExt) do
+    aDC:=ReferenceDC;
+    if aDC=0 then
+      aDC:=FPaperView.Canvas.Handle;
+    with TPrintPreviewHelper.ScaleToDeviceContext(aDC, FDeviceExt) do
     begin
       AMetafile.Width := X;
       AMetafile.Height := Y;
     end;
     ACanvas := TMetafileCanvas.CreateWithComment(AMetafile, ReferenceDC,
-      Format('%s - http://www.delphiarea.com', [ClassName]), PrintJobTitle);
+      ClassName, PrintJobTitle);
     if ACanvas.Handle = 0 then
     begin
       ACanvas.Free;
