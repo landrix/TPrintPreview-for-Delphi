@@ -6,7 +6,7 @@
 {  kambiz@delphiarea.com                                                       }
 {  http://www.delphiarea.com                                                   }
 {                                                                              }
-{  TPrintPreview v5.93                                                         }
+{  TPrintPreview v5.94                                                         }
 {  TPaperPreview v2.20                                                         }
 {  TThumbnailPreview v2.12                                                     }
 {                                                                              }
@@ -5167,6 +5167,7 @@ var
   pdf: TPdfDocument;
 {$ELSEIF PDF_DSPDF}
 var
+  PageNo: Integer;
   AnyPageRendered: Boolean;
 {$ELSEIF PDF_WPDF}
 {$IFEND}
