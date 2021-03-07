@@ -575,10 +575,12 @@ type
       Proportinal, ShrinkOnly, Center: Boolean): TRect;
     function PaintWinControlEx2(const Rect: TRect; WinControl: TWinControl;
       VertAlign: TVertAlign; HorzAlign: THorzAlign): TRect;
-    function PaintRichText(const Rect: TRect; RichEdit: TCustomRichEdit;
-      MaxPages: Integer; pOffset: PInteger = nil): Integer;
-    function GetRichTextRect(var Rect: TRect; RichEdit: TCustomRichEdit;
-      pOffset: PInteger = nil): Integer;
+    function PaintRichText(const Rect: TRect; RichEdit: TCustomRichEdit; MaxPages: Integer; pOffset: PInteger = nil): Integer; overload;
+    function PaintRichText(const Rect: TRect; RichWnd: HWND; MaxPages: Integer; pOffset: PInteger = nil): Integer; overload;
+
+    function GetRichTextRect(var Rect: TRect; RichEdit: TCustomRichEdit; pOffset: PInteger = nil): Integer; overload;
+    function GetRichTextRect(var Rect: TRect; RichWnd: HWND; pOffset: PInteger): Integer; overload;
+
     procedure Clear;
     function Delete(PageNo: Integer): Boolean;
     function Move(PageNo, NewPageNo: Integer): Boolean;
@@ -3034,8 +3036,12 @@ begin
   end;
 end;
 
-function TPrintPreview.PaintRichText(const Rect: TRect;
-  RichEdit: TCustomRichEdit; MaxPages: Integer; pOffset: PInteger): Integer;
+function TPrintPreview.PaintRichText(const Rect: TRect; RichEdit: TCustomRichEdit; MaxPages: Integer; pOffset: PInteger): Integer;
+begin
+  result := PaintRichText(Rect, RichEdit.Handle, MaxPages, pOffset);
+end;
+
+function TPrintPreview.PaintRichText(const Rect: TRect; RichWnd: HWND; MaxPages: Integer; pOffset: PInteger = nil): Integer;
 var
   Range: TFormatRange;
   RectTWIPS: TRect;
@@ -3053,10 +3059,10 @@ begin
     Range.chrg.cpMin := pOffset^;
   TextLenEx.flags := GTL_DEFAULT;
   TextLenEx.codepage := CP_UTF8;
-  MaxLen := SendMessage(RichEdit.Handle, EM_GETTEXTLENGTHEX, WPARAM(@TextLenEx), 0);
+  MaxLen := SendMessage(RichWnd, EM_GETTEXTLENGTHEX, WPARAM(@TextLenEx), 0);
   SaveIndex := SaveDC(FPageCanvas.Handle);
   try
-    SendMessage(RichEdit.Handle, EM_FORMATRANGE, 0, 0);
+    SendMessage(RichWnd, EM_FORMATRANGE, 0, 0);
     repeat
       if Result > 0  then
       begin
@@ -3069,14 +3075,14 @@ begin
       Range.rcPage := RectTWIPS;
       Range.hdc := FPageCanvas.Handle;
       SetMapMode(FPageCanvas.Handle, MM_TEXT);
-      Range.chrg.cpMin := SendMessage(RichEdit.Handle, EM_FORMATRANGE, 0, LPARAM(@Range));
-      SendMessage(RichEdit.Handle, EM_DISPLAYBAND, 0, LPARAM(@Range.rc));
+      Range.chrg.cpMin := SendMessage(RichWnd, EM_FORMATRANGE, 0, LPARAM(@Range));
+      SendMessage(RichWnd, EM_DISPLAYBAND, 0, LPARAM(@Range.rc));
       if Range.chrg.cpMin <> -1 then
         Inc(Result);
     until (Range.chrg.cpMin >= MaxLen) or (Range.chrg.cpMin = -1) or
           ((MaxPages > 0) and (Result >= MaxPages));
   finally
-    SendMessage(RichEdit.Handle, EM_FORMATRANGE, 0, 0);
+    SendMessage(RichWnd, EM_FORMATRANGE, 0, 0);
     RestoreDC(FPageCanvas.Handle, SaveIndex);
   end;
   if pOffset <> nil then
@@ -3086,8 +3092,13 @@ begin
       pOffset^ := -1;
 end;
 
-function TPrintPreview.GetRichTextRect(var Rect: TRect;
-  RichEdit: TCustomRichEdit; pOffset: PInteger): Integer;
+
+function TPrintPreview.GetRichTextRect(var Rect: TRect; RichEdit: TCustomRichEdit; pOffset: PInteger): Integer;
+begin
+  result := GetRichTextRect(Rect, RichEdit.Handle, pOffset);
+end;
+
+function TPrintPreview.GetRichTextRect(var Rect: TRect; RichWnd: HWND; pOffset: PInteger): Integer;
 var
   Range: TFormatRange;
   RectTWIPS: TRect;
@@ -3109,21 +3120,21 @@ begin
   SaveIndex := SaveDC(FPageCanvas.Handle);
   try
     SetMapMode(FPageCanvas.Handle, MM_TEXT);
-    SendMessage(RichEdit.Handle, EM_FORMATRANGE, 0, 0);
-    Range.chrg.cpMin := SendMessage(RichEdit.Handle, EM_FORMATRANGE, 0, LPARAM(@Range));
+    SendMessage(RichWnd, EM_FORMATRANGE, 0, 0);
+    Range.chrg.cpMin := SendMessage(RichWnd, EM_FORMATRANGE, 0, LPARAM(@Range));
     if Range.chrg.cpMin = -1 then
       Rect.Bottom := Rect.Top
     else
       Rect.Bottom := ConvertY(Range.rc.Bottom, mmTWIPS, FUnits);
   finally
-    SendMessage(RichEdit.Handle, EM_FORMATRANGE, 0, 0);
+    SendMessage(RichWnd, EM_FORMATRANGE, 0, 0);
     RestoreDC(FPageCanvas.Handle, SaveIndex);
   end;
   if pOffset <> nil then
   begin
     TextLenEx.flags := GTL_DEFAULT;
     TextLenEx.codepage := CP_UTF8;
-    MaxLen := SendMessage(RichEdit.Handle, EM_GETTEXTLENGTHEX, WPARAM(@TextLenEx), 0);
+    MaxLen := SendMessage(RichWnd, EM_GETTEXTLENGTHEX, WPARAM(@TextLenEx), 0);
     if Range.chrg.cpMin < MaxLen then
       pOffset^ := Range.chrg.cpMin
     else
