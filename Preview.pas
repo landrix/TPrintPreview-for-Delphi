@@ -33,9 +33,9 @@
 
 {------------------------------------------------------------------------------}
 {  Use cairo library to output preview as PDF document                         }
-{  Get the newest library from xxxxxx                                          }
+{  Get the newest library from https://github.com/ProHolz/CairoDelphi          }
 {------------------------------------------------------------------------------}
-{$DEFINE PDF_CAIRO}
+{.$DEFINE PDF_CAIRO}
 
 
 
@@ -5263,7 +5263,7 @@ begin
 
 
 {$ELSEIF DEFINED(PDF_CAIRO)}
-  Cairo := CairoExport;
+  Cairo := CairoExporter;
   if Cairo <> nil then
   try
   Pdf := Cairo.GetCairoPDF;
@@ -5272,10 +5272,10 @@ begin
     ChangeState(psSavingPDF);
     try
       pdf.CreationDate := Now;
-      pdf.Creator := PDFDocumentInfo.Creator;
-      pdf.Author := PDFDocumentInfo.Author;
-      pdf.Subject := PDFDocumentInfo.Subject;
-      pdf.Title := PDFDocumentInfo.Title;
+      pdf.Creator :=  WideString(PDFDocumentInfo.Creator);
+      pdf.Author := WideString(PDFDocumentInfo.Author);
+      pdf.Subject := WideString(PDFDocumentInfo.Subject);
+      pdf.Title := WideString(PDFDocumentInfo.Title);
       DoProgress(0, TotalPages);
 
       for PageNo := 1 to TotalPages do
@@ -5315,7 +5315,7 @@ begin
   {$ELSEIF DEFINED(PDF_WPDF)}
   Result := true;
   {$ELSEIF DEFINED(PDF_CAIRO)}
-  Result :=  CairoExport <> nil;
+  Result :=  CairoExporter <> nil;
  {$ELSE}
   Result := false;
   {$IFEND}
