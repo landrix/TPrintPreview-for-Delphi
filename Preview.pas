@@ -30,6 +30,16 @@
 {------------------------------------------------------------------------------}
 {.$DEFINE PDF_WPDF}
 
+
+{------------------------------------------------------------------------------}
+{  Use cairo library to output preview as PDF document                         }
+{  Get the newest library from https://github.com/ProHolz/CairoDelphi          }
+{------------------------------------------------------------------------------}
+{.$DEFINE PDF_CAIRO}
+
+
+
+
 {------------------------------------------------------------------------------}
 {  Register Components in IDE                                                  }
 {------------------------------------------------------------------------------}
@@ -1085,6 +1095,7 @@ implementation
 uses
   {$IFDEF PDF_SYNOPSE} SynPdf, {$ENDIF}
   {$IFDEF PDF_WPDF} WPPDFR1,WPPDFR2, {$ENDIF}
+  {$IFDEF PDF_CAIRO} Cairo.ExportIntf, {$ENDIF}
   System.Types,
   Vcl.ImgList,
   WinApi.RichEdit, WinApi.CommCtrl, System.Math;
@@ -5165,11 +5176,16 @@ procedure TPrintPreview.SaveAsPDF(const FileName: String);
 var
   PageNo: Integer;
   pdf: TPdfDocument;
-{$ELSEIF PDF_DSPDF}
+{$ELSEIF DEFINED(PDF_DSPDF)}
 var
   PageNo: Integer;
   AnyPageRendered: Boolean;
-{$ELSEIF PDF_WPDF}
+{$ELSEIF DEFINED(PDF_CAIRO)}
+  var
+    PageNo: Integer;
+    Cairo: ICairoExporter;
+    PDF : ICairoPDF;
+
 {$IFEND}
 begin
 {$IFDEF PDF_SYNOPSE}
@@ -5206,7 +5222,7 @@ begin
   finally
     pdf.Free;
   end;
-{$ELSEIF PDF_DSPDF}
+{$ELSEIF DEFINED(PDF_DSPDFk)}
   if dsPDF.Exists then
   begin
     ChangeState(psSavingPDF);
@@ -5243,8 +5259,48 @@ begin
   end
   else
     raise EPDFLibraryError.Create(SdsPDFError);
-{$ELSEIF PDF_WPDF}
+{$ELSEIF DEFINED(PDF_WPDF)}
 
+
+{$ELSEIF DEFINED(PDF_CAIRO)}
+  Cairo := CairoExporter;
+  if Cairo <> nil then
+  try
+  Pdf := Cairo.GetCairoPDF;
+  Pdf.CreatePDF(FileName, ConvertX(PaperWidth, Units, mmPoints), ConvertY(PaperHeight, Units, mmPoints));
+   try
+    ChangeState(psSavingPDF);
+    try
+      pdf.CreationDate := Now;
+      pdf.Creator :=  WideString(PDFDocumentInfo.Creator);
+      pdf.Author := WideString(PDFDocumentInfo.Author);
+      pdf.Subject := WideString(PDFDocumentInfo.Subject);
+      pdf.Title := WideString(PDFDocumentInfo.Title);
+      DoProgress(0, TotalPages);
+
+      for PageNo := 1 to TotalPages do
+      begin
+        case DoPageProcessing(PageNo) of
+          pcAccept:
+          begin
+            pdf.AddPage;
+            pdf.RenderMetaFile(Pages[PageNo].Handle);
+          end;
+          pcCancellAll:
+            Exit;
+        end;
+        DoProgress(PageNo, TotalPages);
+      end;
+
+    finally
+      ChangeState(psReady);
+    end;
+  finally
+    pdf := nil;
+  end;
+  finally
+   Cairo := nil;
+  end;
 {$ELSE}
   raise EPDFError.Create(PDFError);
 {$IFEND}
@@ -5254,11 +5310,13 @@ function TPrintPreview.CanSaveAsPDF: Boolean;
 begin
   {$IFDEF PDF_SYNOPSE}
   Result := True;
-  {$ELSEIF PDF_DSPDF}}
+  {$ELSEIF DEFINED(PDF_DSPDF)}
   Result := dsPDF.Exists;
-  {$ELSEIF PDF_WPDF}}
+  {$ELSEIF DEFINED(PDF_WPDF)}
   Result := true;
-  {$ELSE}
+  {$ELSEIF DEFINED(PDF_CAIRO)}
+  Result :=  CairoExporter <> nil;
+ {$ELSE}
   Result := false;
   {$IFEND}
 end;
