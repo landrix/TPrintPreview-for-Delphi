@@ -6,7 +6,7 @@
 {  kambiz@delphiarea.com                                                       }
 {  http://www.delphiarea.com                                                   }
 {                                                                              }
-{  TPrintPreview v5.94                                                         }
+{  TPrintPreview v5.95                                                         }
 {  TPaperPreview v2.20                                                         }
 {  TThumbnailPreview v2.12                                                     }
 {                                                                              }
@@ -24,9 +24,10 @@
 {------------------------------------------------------------------------------}
 {.$DEFINE PDF_DSPDF}
 
+
 {------------------------------------------------------------------------------}
 {  Use wPDF library to output preview as PDF document                          }
-{  Get the newest library from http://www.wpcubed.com/products/wpdf/index.htm  }
+{  Get the newest library from https://www.wpcubed.com/pdf/products/wpdf/      }
 {------------------------------------------------------------------------------}
 {.$DEFINE PDF_WPDF}
 
@@ -36,8 +37,6 @@
 {  Get the newest library from https://github.com/ProHolz/CairoDelphi          }
 {------------------------------------------------------------------------------}
 {.$DEFINE PDF_CAIRO}
-
-
 
 
 {------------------------------------------------------------------------------}
@@ -4729,6 +4728,7 @@ begin
   FLogicalExt.Y := MulDiv(FDeviceExt.Y, Screen.PixelsPerInch, VertPixelsPerInch);
 end;
 
+//http://forum.delphiarea.com/viewtopic.php?f=7&t=2225
 procedure TPrintPreview.CreateMetafileCanvas(out AMetafile: TMetafile;
   out ACanvas: TCanvas);
 var
@@ -5196,7 +5196,6 @@ var
     PageNo: Integer;
     Cairo: ICairoExporter;
     PDF : ICairoPDF;
-
 {$IFEND}
 begin
 {$IFDEF PDF_SYNOPSE}
@@ -5233,7 +5232,7 @@ begin
   finally
     pdf.Free;
   end;
-{$ELSEIF DEFINED(PDF_DSPDFk)}
+{$ELSEIF DEFINED(PDF_DSPDF)}
   if dsPDF.Exists then
   begin
     ChangeState(psSavingPDF);
@@ -5277,40 +5276,40 @@ begin
   Cairo := CairoExporter;
   if Cairo <> nil then
   try
-  Pdf := Cairo.GetCairoPDF;
-  Pdf.CreatePDF(FileName, ConvertX(PaperWidth, Units, mmPoints), ConvertY(PaperHeight, Units, mmPoints));
-   try
-    ChangeState(psSavingPDF);
+    Pdf := Cairo.GetCairoPDF;
+    Pdf.CreatePDF(FileName, ConvertX(PaperWidth, Units, mmPoints), ConvertY(PaperHeight, Units, mmPoints));
     try
-      pdf.CreationDate := Now;
-      pdf.Creator :=  WideString(PDFDocumentInfo.Creator);
-      pdf.Author := WideString(PDFDocumentInfo.Author);
-      pdf.Subject := WideString(PDFDocumentInfo.Subject);
-      pdf.Title := WideString(PDFDocumentInfo.Title);
-      DoProgress(0, TotalPages);
+      ChangeState(psSavingPDF);
+      try
+        pdf.CreationDate := Now;
+        pdf.Creator :=  WideString(PDFDocumentInfo.Creator);
+        pdf.Author := WideString(PDFDocumentInfo.Author);
+        pdf.Subject := WideString(PDFDocumentInfo.Subject);
+        pdf.Title := WideString(PDFDocumentInfo.Title);
+        DoProgress(0, TotalPages);
 
-      for PageNo := 1 to TotalPages do
-      begin
-        case DoPageProcessing(PageNo) of
-          pcAccept:
-          begin
-            pdf.AddPage;
-            pdf.RenderMetaFile(Pages[PageNo].Handle);
+        for PageNo := 1 to TotalPages do
+        begin
+          case DoPageProcessing(PageNo) of
+            pcAccept:
+            begin
+              pdf.AddPage;
+              pdf.RenderMetaFile(Pages[PageNo].Handle);
+            end;
+            pcCancellAll:
+              Exit;
           end;
-          pcCancellAll:
-            Exit;
+          DoProgress(PageNo, TotalPages);
         end;
-        DoProgress(PageNo, TotalPages);
-      end;
 
+      finally
+        ChangeState(psReady);
+      end;
     finally
-      ChangeState(psReady);
+      pdf := nil;
     end;
   finally
-    pdf := nil;
-  end;
-  finally
-   Cairo := nil;
+    Cairo := nil;
   end;
 {$ELSE}
   raise EPDFError.Create(PDFError);
@@ -5327,7 +5326,7 @@ begin
   Result := true;
   {$ELSEIF DEFINED(PDF_CAIRO)}
   Result :=  CairoExporter <> nil;
- {$ELSE}
+  {$ELSE}
   Result := false;
   {$IFEND}
 end;

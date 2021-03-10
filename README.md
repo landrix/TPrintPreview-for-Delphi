@@ -1,6 +1,6 @@
 # TPrintPreview-for-Delphi
 
-Print Preview Components 5.94 (Feb 2, 2021)
+Print Preview Components 5.95 (Mar 10, 2021)
 
 Import from http://www.delphiarea.com/products/delphi-components/preview/  
 Copyright Kambiz R. Khojasteh
